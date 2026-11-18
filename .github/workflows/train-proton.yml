@@ -23,7 +23,7 @@ concurrency:
 jobs:
   train:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 220
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -47,10 +47,10 @@ jobs:
         run: |
           python -m proton.train \
             --data /tmp/proton-training.txt \
-            --hours 0.05 \
-            --max-steps 250 \
+            --hours 3 \
+            --max-steps 1000000 \
             --device cpu \
-            --eval-interval 25
+            --eval-interval 1000
 
       - name: Save model checkpoint as an artifact
         uses: actions/upload-artifact@v4
@@ -63,7 +63,7 @@ jobs:
       - name: Explain training result
         run: |
           echo "## Proton training finished" >> "$GITHUB_STEP_SUMMARY"
-          echo "- Bounded CPU run: at most 3 minutes or 250 optimizer steps." >> "$GITHUB_STEP_SUMMARY"
+          echo "- Requested training duration: up to 3 hours, with a 220-minute job safety timeout." >> "$GITHUB_STEP_SUMMARY"
           echo "- Only explicitly approved collective lessons marked training_eligible are included." >> "$GITHUB_STEP_SUMMARY"
           echo "- The checkpoint is attached as a workflow artifact for 30 days." >> "$GITHUB_STEP_SUMMARY"
-          echo "- This experimental character-level model is not yet a capable conversational or coding AI." >> "$GITHUB_STEP_SUMMARY"
+          echo "- This experimental character-level model is not yet a capable conversational or coding AI."\n          echo "- The current corpus is small; a long run may overfit and is an engineering experiment, not a capability guarantee." >> "$GITHUB_STEP_SUMMARY"
