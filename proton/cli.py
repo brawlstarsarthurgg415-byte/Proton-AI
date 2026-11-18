@@ -1,18 +1,23 @@
 """Interactive terminal for Proton-AI."""
 from .core import Proton
+from .learning import LearningPipeline
 
 HELP = """Comandos do Proton:
-  /learn texto   salva um conhecimento na memória
+  /learn texto   envia uma anotação para revisão local e memória
   /ask pergunta  procura na memória
   /list          lista conhecimentos salvos
   /help          mostra esta ajuda
   /quit          encerra
+
+A revisão local verifica clareza básica, origem e duplicidade.
+Ela NÃO confirma se uma informação é verdadeira.
 """
 
 
 def main() -> None:
     proton = Proton()
-    print("Proton-AI 0.1.0 — protótipo de memória local")
+    learning = LearningPipeline(proton.memory)
+    print("Proton-AI 0.2.0 — memória e revisão local")
     print("Digite /help para ver os comandos.")
     while True:
         try:
@@ -26,15 +31,18 @@ def main() -> None:
         if command == "/help":
             print(HELP)
         elif command.startswith("/learn "):
-            try:
-                item = proton.learn(command[7:])
-                print(f"Proton: conhecimento {item['id']} salvo na memória local.")
-            except ValueError as exc:
-                print(f"Proton: {exc}")
+            item, reports = learning.submit(command[7:], source="user")
+            for report in reports:
+                status = "OK" if report.passed else "ATENÇÃO"
+                print(f"  [{status}] Professor {report.name}: {report.message}")
+            if item:
+                print(f"Proton: anotação {item['id']} aprovada nas verificações locais e salva.")
+            else:
+                print("Proton: não salvei a anotação. Revise os avisos acima.")
         elif command.startswith("/ask "):
             results = proton.ask(command[5:])
             if not results:
-                print("Proton: ainda não encontrei isso na memória. Você pode me ensinar com /learn.")
+                print("Proton: ainda não encontrei isso na minha memória. Você pode me ensinar com /learn.")
             else:
                 print("Proton: encontrei estas anotações:")
                 for item in results:
