@@ -1,0 +1,7 @@
+# Explicitly include all project implementation languages in GitHub's language statistics.
+*.rs linguist-detectable=true
+*.cpp linguist-detectable=true
+*.hpp linguist-detectable=true
+*.ts linguist-detectable=true
+*.js linguist-detectable=true
+*.sh linguist-detectable=true
