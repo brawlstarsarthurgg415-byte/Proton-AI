@@ -6,8 +6,10 @@ import time
 from pathlib import Path
 
 from .collective import (
-    CollectiveError, export_training_text, publish_pending, publish_all_pending, submit, sync,
+    CollectiveError, OUTBOX, export_training_text, publish_pending,
+    publish_all_pending, submit, sync,
 )
+from .guardian import GuardianError, review_outbox
 
 
 def main() -> None:
@@ -27,6 +29,10 @@ def main() -> None:
 
     watch = sub.add_parser("watch", help="retry queued uploads and receive approved knowledge while online")
     watch.add_argument("--interval", type=int, default=60, help="seconds between checks")
+
+    guard = sub.add_parser("guard", help="screen queued proposals with local Qwen3Guard")
+    guard.add_argument("--limit", type=int, default=20)
+    guard.add_argument("--model", default="Qwen/Qwen3Guard-Gen-0.6B")
 
     export = sub.add_parser("export-training", help="export approved lessons for neural training")
     export.add_argument("--output", type=Path, default=Path("data/collective-training.txt"))
@@ -58,11 +64,17 @@ def main() -> None:
                 except (CollectiveError, OSError) as exc:
                     print(f"Sincronização indisponível; nova tentativa em breve: {exc}")
                 time.sleep(args.interval)
+        elif args.command == "guard":
+            results = review_outbox(OUTBOX, limit=args.limit, model_id=args.model)
+            for item in results:
+                print(f"{item['id']}: {item['verdict']} | {item['recommendation']} | {', '.join(item['categories'])}")
+            print(f"Propostas analisadas: {len(results)}")
+            print("A Guardiã não aprova conteúdo nem o envia ao treinamento; resultados incertos ficam para revisão.")
         elif args.command == "export-training":
             print(f"Lições aprovadas exportadas: {export_training_text(args.output)}")
             print(f"Arquivo: {args.output}")
-    except (CollectiveError, OSError) as exc:
-        parser.exit(2, f"Erro: {exc}\n")
+    except (CollectiveError, GuardianError, OSError) as exc:
+        parser.exit(2, f"Erro: {exc}\\n")
 
 
 if __name__ == "__main__":
