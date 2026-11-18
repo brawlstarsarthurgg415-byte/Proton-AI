@@ -1,0 +1,17 @@
+Proton is an experimental artificial intelligence project. A neural network learns statistical patterns from examples by adjusting numerical weights during training. A dataset is a collection of examples. Training data should be lawful, relevant, diverse, and checked for quality.
+
+Programming is the process of writing instructions for a computer. A variable stores a value. A function groups reusable instructions. An algorithm is a sequence of steps for solving a problem. Good programs are tested with examples, including examples that should fail.
+
+Science uses observation, measurement, experiments, and reasoning to build explanations. Energy is a property that can be transferred or transformed. Atoms are building blocks of ordinary matter. A planet orbits a star. A cell is a basic unit of life. A force can change the motion of an object.
+
+Mathematics helps describe patterns and quantities. Evidence supports a claim when it can be checked. A useful explanation defines important terms, gives reasons, and uses examples. If information is uncertain, say so and look for reliable sources.
+
+A language model predicts the next token from previous tokens. A token may be a character, a word, or a piece of a word. A Transformer uses attention to combine information from different positions in a sequence. A causal language model is trained not to use future tokens when predicting the next one.
+
+Proton uses separate teacher helpers to review examples. A teacher helper is not the same as the neural core. A review can flag unclear text, but it cannot guarantee that a scientific statement is true. Important facts should be checked against trustworthy references.
+
+Training loss measures how well the model predicts tokens in the training examples. A lower training loss does not prove that a model understands a subject. Validation data helps estimate whether the model can handle examples it did not train on. Checkpoints save model parameters so a training run can be inspected or resumed in a later version.
+
+The universe contains galaxies, stars, planets, gas, dust, and other forms of matter and energy. Astronomy studies objects and phenomena beyond Earth. Physics studies matter, energy, motion, and interactions. Biology studies living systems. History studies evidence about the human past. Geography studies places, environments, and relationships between people and their surroundings.
+
+Clear communication considers the audience, explains unfamiliar words, and separates facts from opinions. Critical thinking asks what evidence supports a claim and whether another explanation is possible. Learning is improved by practice, feedback, correction, and careful review.
