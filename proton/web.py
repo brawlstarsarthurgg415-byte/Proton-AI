@@ -4,8 +4,10 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 from urllib.parse import parse_qs
 
 from .core import Proton
+from .learning import LearningPipeline
 
 proton = Proton()
+learning = LearningPipeline(proton.memory)
 
 PAGE = """<!doctype html>
 <html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
@@ -14,12 +16,12 @@ PAGE = """<!doctype html>
 main{width:min(760px,100%);background:#111f3b;border:1px solid #30466e;border-radius:22px;padding:28px;box-shadow:0 20px 70px #0008}
 h1{margin:0;font-size:2rem}p{color:#b8c9e8}.tag{color:#7de7ff;font-size:.85rem;letter-spacing:.12em}
 form{display:grid;gap:12px;margin:22px 0}textarea{width:100%;min-height:100px;background:#081326;color:#fff;border:1px solid #40577f;border-radius:12px;padding:14px;font:inherit}
-.actions{display:flex;gap:10px;flex-wrap:wrap}button{border:0;border-radius:10px;padding:12px 18px;background:#68d9f4;color:#071426;font-weight:700;cursor:pointer}button.secondary{background:#a78bfa}
+.actions{display:flex;gap:10px;flex-wrap:wrap}button{border:0;border-radius:10px;padding:12px 18px;background:#68d9f4;color:#071426;font-weight:700;cursor:pointer;min-height:44px}button.secondary{background:#a78bfa}
 .result{white-space:pre-wrap;background:#09172c;border:1px solid #2c4267;border-radius:12px;padding:16px;min-height:70px;line-height:1.6}
 small{color:#9db2d6}
-</style></head><body><main><div class="tag">PROTÓTIPO 0.1.0</div><h1>🧠 Proton-AI</h1><p>Ensine uma anotação ou faça uma pergunta sobre o que já está salvo na memória local.</p>
+</style></head><body><main><div class="tag">PROTÓTIPO 0.2.0</div><h1>🧠 Proton-AI</h1><p>Ensine uma anotação ou faça uma pergunta sobre o que já está salvo na memória local.</p>
 <form method="post"><textarea name="text" placeholder="Digite uma informação ou pergunta..."></textarea><div class="actions"><button name="action" value="learn">Ensinar ao Proton</button><button class="secondary" name="action" value="ask">Perguntar</button><button name="action" value="list">Ver memória</button></div></form>
-<div class="result">__RESULT__</div><p><small>Os dados ficam no aparelho em que o Proton está executando. Esta versão não é um modelo de linguagem treinado.</small></p></main></body></html>"""
+<div class="result">__RESULT__</div><p><small>As verificações locais analisam clareza básica, origem e duplicidade. Elas não comprovam fatos. Os dados ficam neste aparelho.</small></p></main></body></html>"""
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -44,11 +46,16 @@ class Handler(BaseHTTPRequestHandler):
         text = form.get("text", [""])[0].strip()
         action = form.get("action", [""])[0]
         if action == "learn":
-            try:
-                item = proton.learn(text)
-                message = f"Anotação {item['id']} salva na memória local. Obrigado pelo ensinamento!"
-            except ValueError as exc:
-                message = str(exc)
+            item, reports = learning.submit(text, source="user")
+            lines = [
+                f"[{'OK' if report.passed else 'ATENÇÃO'}] Professor {report.name}: {report.message}"
+                for report in reports
+            ]
+            if item:
+                lines.append(f"Anotação {item['id']} salva após as verificações locais. Obrigado pelo ensinamento!")
+            else:
+                lines.append("Não salvei a anotação. Veja os avisos e tente novamente.")
+            message = "\n".join(lines)
         elif action == "ask":
             results = proton.ask(text)
             message = "\n".join(f"• {item['text']}" for item in results) or "Não encontrei essa informação na memória. Você pode ensiná-la ao Proton."
