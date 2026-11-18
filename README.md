@@ -10,7 +10,7 @@
   <img src="https://img.shields.io/badge/TypeScript-interface-3178C6?logo=typescript" alt="TypeScript">
   <img src="https://img.shields.io/badge/JavaScript-ferramentas-F7DF1E?logo=javascript&logoColor=black" alt="JavaScript">
   <img src="https://img.shields.io/badge/Python-treinamento%20neural-3776AB?logo=python" alt="Python">
-  <img src="https://img.shields.io/badge/Shell-automa%C3%A7%C3%A3o-4EAA25?logo=gnubash" alt="Shell">
+  <img src="https://img.shields.io/badge/Shell-automa%C3%A7%C3%A3o-4EAA25?logo=gnubash" alt="Shell">\n  <img src="https://img.shields.io/badge/Go-utilit%C3%A1rios-00ADD8?logo=go" alt="Go">\n  <img src="https://img.shields.io/badge/Java-JVM-ED8B00?logo=openjdk" alt="Java">\n  <img src="https://img.shields.io/badge/Ruby-ferramentas-CC342D?logo=ruby" alt="Ruby">\n  <img src="https://img.shields.io/badge/PHP-web-777BB4?logo=php" alt="PHP">\n  <img src="https://img.shields.io/badge/C%23-.NET-512BD4?logo=dotnet" alt="C#">\n  <img src="https://img.shields.io/badge/Swift-adaptador-F05138?logo=swift" alt="Swift">
   <img src="https://img.shields.io/badge/Android-Termux-3DDC84?logo=android" alt="Android Termux">
   <img src="https://img.shields.io/badge/status-em%20desenvolvimento-orange" alt="Em desenvolvimento">
   <img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT">
