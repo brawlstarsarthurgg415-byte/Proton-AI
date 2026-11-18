@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="420" viewBox="0 0 1200 420" role="img" aria-labelledby="title desc">
+  <title id="title">Proton-AI</title>
+  <desc id="desc">A futuristic blue and violet neural network illustration with the Proton-AI name.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#071426"/>
+      <stop offset="0.55" stop-color="#17245a"/>
+      <stop offset="1" stop-color="#35165e"/>
+    </linearGradient>
+    <linearGradient id="glow" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#53e7ff"/>
+      <stop offset="1" stop-color="#a78bfa"/>
+    </linearGradient>
+    <radialGradient id="orb">
+      <stop offset="0" stop-color="#d7fbff" stop-opacity=".95"/>
+      <stop offset=".25" stop-color="#55dfff" stop-opacity=".55"/>
+      <stop offset="1" stop-color="#55dfff" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="420" rx="28" fill="url(#bg)"/>
+  <circle cx="930" cy="205" r="190" fill="url(#orb)" opacity=".8"/>
+  <g stroke="url(#glow)" stroke-width="2" opacity=".65" fill="none">
+    <path d="M770 90 875 145 1000 85 1080 170 1000 275 875 245 770 315 700 205Z"/>
+    <path d="m770 90 105 155 125-160M875 145l125 130 80-105M700 205l175-60 205 25M770 315l105-70 125 30"/>
+    <path d="m825 55 50 90 125-60 80 85M720 270l155-25 125 30"/>
+  </g>
+  <g fill="#b8f5ff">
+    <circle cx="770" cy="90" r="7"/><circle cx="875" cy="145" r="8"/>
+    <circle cx="1000" cy="85" r="7"/><circle cx="1080" cy="170" r="8"/>
+    <circle cx="1000" cy="275" r="7"/><circle cx="875" cy="245" r="9"/>
+    <circle cx="770" cy="315" r="7"/><circle cx="700" cy="205" r="6"/>
+  </g>
+  <g font-family="Arial, Helvetica, sans-serif" fill="#fff">
+    <text x="82" y="172" font-size="76" font-weight="700" letter-spacing="-2">PROTON-AI</text>
+    <text x="88" y="222" font-size="25" fill="#b9d8ff">Uma inteligência em construção.</text>
+    <text x="88" y="275" font-size="17" fill="#9fb5dc">MEMÓRIA  •  APRENDIZADO  •  EVOLUÇÃO</text>
+  </g>
+  <path d="M88 310h410" stroke="url(#glow)" stroke-width="4" stroke-linecap="round"/>
+</svg>
