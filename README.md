@@ -5,13 +5,13 @@
 <p align="center"><strong>Uma inteligência artificial experimental, construída para aprender, organizar conhecimento e evoluir com segurança.</strong></p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&logoColor=white" alt="Python 3.11+">
+  <img src="https://img.shields.io/badge/Rust-native%20core-000000?logo=rust&logoColor=white" alt="Rust native core">\n  <img src="https://img.shields.io/badge/C%2B%2B-17-00599C?logo=cplusplus&logoColor=white" alt="C++17">\n  <img src="https://img.shields.io/badge/TypeScript-UI-3178C6?logo=typescript&logoColor=white" alt="TypeScript">\n  <img src="https://img.shields.io/badge/Python-research%20tools-3776AB?logo=python&logoColor=white" alt="Python research tools">
   <img src="https://img.shields.io/badge/Android-Termux-3DDC84?logo=android&logoColor=white" alt="Android Termux">
   <img src="https://img.shields.io/badge/status-prot%C3%B3tipo%20inicial-orange" alt="Status: protótipo inicial">
   <img src="https://img.shields.io/badge/license-MIT-blue" alt="Licença MIT">
 </p>
 
-**Proton-AI** é um projeto aberto para desenvolver uma inteligência artificial própria por etapas. A versão inicial oferece memória local, comandos no terminal, interface gráfica no navegador e três verificações locais independentes para revisar anotações antes de salvá-las. O objetivo futuro é pesquisar arquiteturas, treinar e avaliar modelos próprios e adicionar agentes especializados.
+**Proton-AI** é um projeto aberto para desenvolver uma inteligência artificial própria por etapas. A arquitetura agora é multilíngue: Rust fornece o primeiro núcleo nativo e a CLI `proton`; C++ contém uma biblioteca inicial de processamento de texto; TypeScript e JavaScript formam a base da interface e das ferramentas; Python permanece reservado para pesquisa, dados e treinamento experimental; Shell automatiza a instalação. Nem todos os módulos estão integrados ainda.
 
 > **Importante:** esta é a fundação inicial do projeto, não um modelo de linguagem já treinado. A memória desta versão salva e recupera anotações; ela ainda não aprende pesos de uma rede neural nem conversa com a capacidade de um grande chatbot.
 
@@ -29,74 +29,76 @@
 | Pesquisa online com fontes | 🟡 Planejado |
 | Atualização validada e reversão | 🟡 Planejado |
 
+## 🧰 Linguagens e responsabilidades
+
+| Linguagem | Responsabilidade | Estado |
+| --- | --- | --- |
+| Rust | Núcleo nativo, CLI, memória e sessão de estudo | 🟢 Primeira versão |
+| C++17 | Biblioteca inicial de tokenização | 🟡 Base criada, ainda não ligada ao núcleo |
+| TypeScript | Tipos e estrutura da interface | 🟡 Base criada |
+| JavaScript | Helpers de comandos da interface | 🟡 Base criada |
+| Python | Pesquisa, preparação de dados e futuros experimentos de treino | 🟠 Módulos anteriores mantidos |
+| Shell | Instalação e checagens de desenvolvimento | 🟢 Scripts criados |
+
+A meta é que o comando principal seja `proton`, sem exigir que a pessoa execute módulos Python diretamente. O projeto ainda está em desenvolvimento e algumas linguagens têm componentes iniciais, não subsistemas completos.
+
 ## 📱 Instalação no Android (Termux)
 
-1. Instale o [Termux](https://termux.dev/) por uma fonte confiável.
-2. Abra o Termux e execute cada comando:
+No Termux, clone o repositório e execute o instalador:
 
 ```bash
-pkg update
-pkg install git python
+pkg install git
 git clone https://github.com/brawlstarsarthurgg415-byte/Proton-AI.git
 cd Proton-AI
+bash scripts/install-termux.sh
 ```
 
-3. Inicie a versão de terminal:
+O instalador prepara Rust, Clang e CMake, compila o núcleo Rust e instala o comando `proton` no ambiente Termux. Depois, teste:
 
 ```bash
-python -m proton.cli
+proton help
+proton status
 ```
 
-4. Para usar a interface gráfica, encerre o terminal com `/quit` e execute:
+No Linux, instale Rust (Cargo) e execute:
 
 ```bash
-python -m proton.web
+cd native
+cargo build --release
+./target/release/proton help
 ```
 
-5. Abra o navegador no mesmo aparelho e visite **http://127.0.0.1:8765**.
+## 💬 Comandos próprios do Proton
 
-No Linux, instale Git e Python 3.11 ou superior e siga os mesmos passos.
+Depois de instalar o núcleo nativo, os comandos são:
 
-## 💬 Como usar
+| Comando | Função |
+| --- | --- |
+| `proton help` | Ajuda |
+| `proton version` | Versão instalada |
+| `proton status` | Estado e memória local |
+| `proton learn "texto"` | Salva uma anotação |
+| `proton ask "termos"` | Pesquisa na memória |
+| `proton memory` | Lista as anotações |
+| `proton study --hours 15` | Sessão de estudo de 15 horas |
 
-No terminal, experimente:
+Os comandos são executados pelo binário Rust. Os dados do núcleo nativo ficam em `data/memory.txt` e `data/study_progress.txt` (ou no diretório indicado por `PROTON_HOME`).
 
-```text
-/help
-/learn A água é formada por hidrogênio e oxigênio.
-/ask De que é formada a água?
-/list
-/quit
-```
-
-- `/learn texto`: envia uma anotação para três verificações locais (clareza básica, origem e duplicidade); se passar, salva na memória.
-- `/ask pergunta`: procura anotações relacionadas à pergunta.
-- `/list`: mostra os conhecimentos salvos.
-- `/help`: mostra os comandos disponíveis.
-- `/quit`: encerra o Proton.
-
-Na interface gráfica, escreva uma informação e toque em **Ensinar ao Proton**. Para consultar, escreva uma pergunta e toque em **Perguntar**. O botão **Ver memória** lista as anotações.
+A busca e a memória ainda são simples. O núcleo nativo é uma fundação, não um chatbot neural completo.
 
 ## 🧩 Como modificar
 
-O projeto está dividido em arquivos pequenos:
+- `native/src/main.rs`: comandos e núcleo Rust.
+- `cpp/src/tokenizer.cpp`: tokenização C++.
+- `ui/src/proton.ts`: tipos e estado da interface TypeScript.
+- `ui/src/commands.js`: auxiliares JavaScript.
+- `scripts/install-termux.sh`: instalador do Termux.
+- `proton/`: protótipos Python anteriores para pesquisa e experiências.
 
-| Caminho | Para que serve |
-| --- | --- |
-| `proton/core.py` | lógica de consulta |\n| `proton/learning.py` | fluxo de entrada e revisão de anotações |\n| `proton/teachers/local.py` | verificadores locais executados em paralelo |
-| `proton/memory.py` | gravação e leitura da memória |
-| `proton/cli.py` | interface de terminal |
-| `proton/web.py` | interface gráfica local |
-| `tests/` | testes automáticos |
-| `assets/` | imagens do projeto |
-
-Para alterar o comportamento, abra o arquivo relacionado, faça uma mudança pequena e execute os testes:
-
-```bash
-python -m unittest discover -s tests
-```
-
-Se os testes passarem, os comportamentos cobertos continuam funcionando. Isso não garante que toda mudança esteja perfeita; leia o código e teste também o recurso alterado.
+Para compilar o núcleo: `cd native && cargo build --release`.
+Para rodar testes Rust: `cd native && cargo test`.
+Para compilar C++: `cmake -S cpp -B cpp/build && cmake --build cpp/build`.
+Para verificar TypeScript: `cd ui && npm install && npm run typecheck`.
 
 ## 🗂️ Estrutura do projeto
 
@@ -149,7 +151,7 @@ python -m proton.study --hours 0.01 --interval 1
 ## 🧪 Testes
 
 ```bash
-python -m unittest discover -s tests
+python -m unittest discover -s tests\ncd native && cargo test
 ```
 
 ## 🤝 Como contribuir
