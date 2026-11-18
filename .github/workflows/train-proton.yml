@@ -66,4 +66,5 @@ jobs:
           echo "- Requested training duration: up to 3 hours, with a 220-minute job safety timeout." >> "$GITHUB_STEP_SUMMARY"
           echo "- Only explicitly approved collective lessons marked training_eligible are included." >> "$GITHUB_STEP_SUMMARY"
           echo "- The checkpoint is attached as a workflow artifact for 30 days." >> "$GITHUB_STEP_SUMMARY"
-          echo "- This experimental character-level model is not yet a capable conversational or coding AI."\n          echo "- The current corpus is small; a long run may overfit and is an engineering experiment, not a capability guarantee." >> "$GITHUB_STEP_SUMMARY"
+          echo "- This experimental character-level model is not yet a capable conversational or coding AI." >> "$GITHUB_STEP_SUMMARY"
+          echo "- The current corpus is small; a long run may overfit and is an engineering experiment, not a capability guarantee." >> "$GITHUB_STEP_SUMMARY"
