@@ -268,7 +268,7 @@ Este projeto usa a licença MIT. Consulte o arquivo [LICENSE](LICENSE).
 <p align="center"><strong>Proton-AI — aprendendo, construindo e evoluindo passo a passo.</strong><br><sub>Projeto experimental: recursos planejados não são recursos já implementados.</sub></p>
 
 
-## 🌐 Rede coletiva de ensinamentos
+## 🛡️ IA Guardiã local\n\nO módulo opcional `Qwen3Guard-Gen-0.6B` faz uma triagem de segurança das propostas coletivas sem chamar uma API externa. Instale com `pip install -e '.[guardian]'` e execute `proton-collective guard --limit 20`. A classificação é apenas auxiliar: nem mesmo um resultado `Safe` aprova uma proposta ou a libera para treinamento. Veja [docs/GUARDIAN.md](docs/GUARDIAN.md). O comando é manual nesta etapa; serviço 24/7 ainda não foi implantado.\n\n## 🌐 Rede coletiva de ensinamentos
 
 O módulo experimental `proton-collective` permite preparar contribuições locais, publicar propostas no GitHub, baixar um feed público aprovado e exportar lições selecionadas para o próximo treinamento neural.
 
