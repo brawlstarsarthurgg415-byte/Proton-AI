@@ -103,20 +103,16 @@ Para verificar TypeScript: `cd ui && npm install && npm run typecheck`.
 ## 🗂️ Estrutura do projeto
 
 ```text
--Proton-AI/
+Proton-AI/
+├── native/                 # núcleo e CLI em Rust
+├── cpp/                    # biblioteca C++17
+├── ui/                     # TypeScript e JavaScript
+├── scripts/                # instalador e verificações
+├── proton/                 # protótipos Python
+├── tests/                  # testes Python
+├── .github/workflows/      # CI multilíngue
 ├── assets/
-├── data/                 # criada localmente ao executar
-├── proton/
-│   ├── core.py
-│   ├── memory.py
-│   ├── cli.py
-│   └── web.py
-├── tests/
-├── .github/workflows/
-├── .gitignore
-├── LICENSE
-├── README.md
-└── requirements.txt
+└── README.md
 ```
 
 ## 🔐 Privacidade e segurança
