@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Proton Brain — Neural Visualizer</title>
+<style>
+:root{color-scheme:dark;--bg:#080d18;--panel:#101a2b;--line:#263650;--cyan:#52d9ed;--violet:#a78bfa;--green:#73e0ad;--muted:#91a2bd}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 50% 0,#172746,var(--bg) 55%);color:#eef5ff;font:15px system-ui,sans-serif}
+main{max-width:1100px;margin:auto;padding:28px 18px}h1{margin:0;font-size:clamp(25px,5vw,42px)}p{color:var(--muted);line-height:1.55}
+header,.panel{background:#101a2bdd;border:1px solid var(--line);border-radius:18px;padding:20px;margin-bottom:16px}
+.eyebrow{color:var(--cyan);font-weight:700;letter-spacing:.12em;text-transform:uppercase;font-size:11px}
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:10px;margin-top:18px}
+.metric{background:#0a1220;border:1px solid var(--line);border-radius:12px;padding:13px}.metric strong{display:block;font-size:22px}.metric span{color:var(--muted);font-size:12px}
+.pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;align-items:stretch}
+.stage{border:1px solid var(--line);border-radius:13px;padding:14px;background:#0b1423;min-height:110px}
+.stage b{display:block;color:var(--cyan);margin-bottom:7px}.experts{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:12px}
+.expert{border:1px solid #3b4d70;background:#15233a;border-radius:9px;padding:10px;text-align:center;font-size:12px}
+.expert.active{border-color:var(--green);box-shadow:0 0 16px #73e0ad35;color:var(--green)}
+.note{border-left:3px solid var(--violet);padding:10px 13px;background:#17162a;border-radius:7px;color:#c8c2e8}
+footer{font-size:12px;color:var(--muted);padding:10px}
+@media(max-width:650px){.pipeline{grid-template-columns:repeat(2,1fr)}.experts{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body><main>
+<header><div class="eyebrow">Proton AI · Neural systems</div><h1>Proton Brain</h1><p>Visualização da arquitetura planejada para o núcleo neural MoE. Este painel descreve os componentes; ainda não está conectado às ativações de um modelo em execução.</p>
+<div class="metrics">
+<div class="metric"><strong>≈3,15B</strong><span>parâmetros-alvo</span></div>
+<div class="metric"><strong>16</strong><span>camadas Transformer</span></div>
+<div class="metric"><strong>8</strong><span>especialistas por camada</span></div>
+<div class="metric"><strong>Top-2</strong><span>especialistas por token</span></div>
+</div></header>
+<section class="panel"><div class="eyebrow">Fluxo de processamento</div><h2>Como um token atravessa o cérebro</h2>
+<div class="pipeline">
+<div class="stage"><b>01 · Tokenizer</b>Converte texto em IDs numéricos de tokens.</div>
+<div class="stage"><b>02 · Embeddings</b>Transforma IDs em vetores que entram na rede.</div>
+<div class="stage"><b>03 · Atenção causal</b>Relaciona cada token ao contexto anterior.</div>
+<div class="stage"><b>04 · Roteador MoE</b>Seleciona os especialistas que processam o token.</div>
+</div>
+<h3>Especialistas disponíveis em cada camada MoE</h3><p>O roteador escolhe dois especialistas por token. O destaque abaixo é ilustrativo, não telemetria ao vivo.</p>
+<div class="experts">
+<div class="expert active">Expert 01</div><div class="expert">Expert 02</div><div class="expert active">Expert 03</div><div class="expert">Expert 04</div>
+<div class="expert">Expert 05</div><div class="expert">Expert 06</div><div class="expert">Expert 07</div><div class="expert">Expert 08</div>
+</div>
+</section>
+<section class="panel"><div class="eyebrow">Estado de implementação</div><h2>O que é real e o que falta</h2>
+<p>O roteador top-k, os especialistas SwiGLU, a atenção causal e a perda auxiliar já têm uma implementação experimental em PyTorch. O perfil 3B é apenas uma configuração-alvo e não deve ser carregado no Android ainda.</p>
+<div class="note">Próximas etapas: tokenizer BPE, treinamento em hardware adequado, avaliação independente, quantização de 4 bits e integração com runtime móvel. Depois disso, este painel poderá receber estatísticas reais do roteador.</div>
+</section>
+<footer>Proton-AI · Protótipo de visualização estática · Sem telemetria neural em tempo real nesta versão.</footer>
+</main></body></html>
