@@ -11,7 +11,7 @@ from pathlib import Path
 from typing import Any
 
 MODEL_ID = "Qwen/Qwen3Guard-Gen-0.6B"
-LABEL_RE = re.compile(r"Safety:\\s*(Safe|Unsafe|Controversial)", re.IGNORECASE)
+LABEL_RE = re.compile(r"Safety:\s*(Safe|Unsafe|Controversial)", re.IGNORECASE)
 CATEGORY_RE = re.compile(
     r"(Violent|Non-violent Illegal Acts|Sexual Content or Sexual Acts|PII|"
     r"Suicide & Self-Harm|Unethical Acts|Politically Sensitive Topics|"
@@ -117,7 +117,7 @@ def review_outbox(outbox: Path, *, limit: int = 20,
             raise GuardianError(f"Falha ao analisar {path.name}: {exc}") from exc
         record["guardian_review"] = result
         # Screening is not curation: preserve status and training_eligible unchanged.
-        path.write_text(json.dumps(record, ensure_ascii=False, indent=2) + "\\n",
+        path.write_text(json.dumps(record, ensure_ascii=False, indent=2) + "\n",
                         encoding="utf-8")
         reviewed.append({"id": record.get("id", path.stem), **result})
     return reviewed
