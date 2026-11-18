@@ -2,10 +2,11 @@
 from __future__ import annotations
 
 import argparse
+import time
 from pathlib import Path
 
 from .collective import (
-    CollectiveError, export_training_text, publish_pending, submit, sync,
+    CollectiveError, export_training_text, publish_pending, publish_all_pending, submit, sync,
 )
 
 
@@ -24,6 +25,9 @@ def main() -> None:
 
     sub.add_parser("sync", help="download the approved collective feed")
 
+    watch = sub.add_parser("watch", help="retry queued uploads and receive approved knowledge while online")
+    watch.add_argument("--interval", type=int, default=60, help="seconds between checks")
+
     export = sub.add_parser("export-training", help="export approved lessons for neural training")
     export.add_argument("--output", type=Path, default=Path("data/collective-training.txt"))
 
@@ -40,6 +44,20 @@ def main() -> None:
             print(f"Proposta enviada para revisão: {publish_pending(args.id)}")
         elif args.command == "sync":
             print(f"Registros aprovados recebidos: {sync()}")
+        elif args.command == "watch":
+            if args.interval < 10:
+                parser.error("--interval must be at least 10 seconds")
+            print("Sincronização coletiva ativa. Propostas ficam na fila sem internet.")
+            print("Somente propostas submetidas explicitamente são enviadas; conversas privadas não são coletadas.")
+            while True:
+                try:
+                    sent, failed = publish_all_pending()
+                    received = sync()
+                    if sent or received or failed:
+                        print(f"Enviadas: {sent} | falhas mantidas na fila: {failed} | aprovadas recebidas: {received}")
+                except (CollectiveError, OSError) as exc:
+                    print(f"Sincronização indisponível; nova tentativa em breve: {exc}")
+                time.sleep(args.interval)
         elif args.command == "export-training":
             print(f"Lições aprovadas exportadas: {export_training_text(args.output)}")
             print(f"Arquivo: {args.output}")
