@@ -9,10 +9,14 @@ description = "Experimental from-scratch neural model with separate teacher agen
 requires-python = ">=3.10"
 dependencies = ["torch>=2.2"]
 
+[project.optional-dependencies]
+guardian = ["transformers>=4.51.0", "accelerate>=0.30.0", "safetensors>=0.4.3"]
+
 [project.scripts]
 proton = "proton.cli:main"
 proton-chat = "proton.cli:main"
-proton-train = "proton.train:main"\nproton-collective = "proton.collective_cli:main"
+proton-train = "proton.train:main"
+proton-collective = "proton.collective_cli:main"
 
 [tool.setuptools.packages.find]
 include = ["proton*"]
