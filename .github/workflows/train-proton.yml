@@ -5,7 +5,7 @@ on:
   push:
     branches: [main]
     paths:
-      - "data/starter.txt"
+      - "data/starter.txt"\n      - "collective/approved.jsonl"\n      - "proton/collective.py"\n      - "proton/collective_cli.py"
       - "proton/model.py"
       - "proton/train.py"
       - ".github/workflows/train-proton.yml"
@@ -55,5 +55,5 @@ jobs:
         run: |
           echo "## Proton training finished" >> "$GITHUB_STEP_SUMMARY"
           echo "- Bounded CPU run: at most 3 minutes or 250 optimizer steps." >> "$GITHUB_STEP_SUMMARY"
-          echo "- The checkpoint is attached as a workflow artifact for 30 days." >> "$GITHUB_STEP_SUMMARY"
+          echo "- Only explicitly approved collective lessons marked training_eligible are included in the corpus." >> "$GITHUB_STEP_SUMMARY"\n          echo "- The checkpoint is attached as a workflow artifact for 30 days." >> "$GITHUB_STEP_SUMMARY"
           echo "- This experimental character-level model is not yet a capable conversational or coding AI." >> "$GITHUB_STEP_SUMMARY"
