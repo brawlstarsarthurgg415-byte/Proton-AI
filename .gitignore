@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+
+# Local Proton memory and user data
+data/
+*.local.json
+
+# Secrets and environment files
+.env
+.env.*
+!.env.example
+*.key
+secrets.json
+
+# Logs and temporary files
+*.log
+temp/
+tmp/
+.cache/
+
+# Editors and operating systems
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
