@@ -1,0 +1,59 @@
+name: Proton bounded neural training
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "data/starter.txt"
+      - "proton/model.py"
+      - "proton/train.py"
+      - ".github/workflows/train-proton.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: proton-neural-training
+  cancel-in-progress: false
+
+jobs:
+  train:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install CPU training dependency
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu torch
+
+      - name: Train experimental Proton model
+        run: |
+          python -m proton.train \
+            --hours 0.05 \
+            --max-steps 250 \
+            --device cpu \
+            --eval-interval 25
+
+      - name: Save model checkpoint as an artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: proton-checkpoint-${{ github.run_id }}
+          path: checkpoints/proton-latest.pt
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Explain training result
+        run: |
+          echo "## Proton training finished" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Bounded CPU run: at most 3 minutes or 250 optimizer steps." >> "$GITHUB_STEP_SUMMARY"
+          echo "- The checkpoint is attached as a workflow artifact for 30 days." >> "$GITHUB_STEP_SUMMARY"
+          echo "- This experimental character-level model is not yet a capable conversational or coding AI." >> "$GITHUB_STEP_SUMMARY"
