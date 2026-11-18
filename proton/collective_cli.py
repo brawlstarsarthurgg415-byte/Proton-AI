@@ -74,7 +74,7 @@ def main() -> None:
             print(f"Lições aprovadas exportadas: {export_training_text(args.output)}")
             print(f"Arquivo: {args.output}")
     except (CollectiveError, GuardianError, OSError) as exc:
-        parser.exit(2, f"Erro: {exc}\\n")
+        parser.exit(2, f"Erro: {exc}\n")
 
 
 if __name__ == "__main__":
