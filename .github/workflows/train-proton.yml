@@ -5,7 +5,10 @@ on:
   push:
     branches: [main]
     paths:
-      - "data/starter.txt"\n      - "collective/approved.jsonl"\n      - "proton/collective.py"\n      - "proton/collective_cli.py"
+      - "data/starter.txt"
+      - "collective/approved.jsonl"
+      - "proton/collective.py"
+      - "proton/collective_cli.py"
       - "proton/model.py"
       - "proton/train.py"
       - ".github/workflows/train-proton.yml"
@@ -35,9 +38,15 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install --index-url https://download.pytorch.org/whl/cpu torch
 
+      - name: Export approved collective lessons
+        run: |
+          python -m proton.collective_cli export-training --output /tmp/collective-training.txt
+          cat data/starter.txt /tmp/collective-training.txt > /tmp/proton-training.txt
+
       - name: Train experimental Proton model
         run: |
           python -m proton.train \
+            --data /tmp/proton-training.txt \
             --hours 0.05 \
             --max-steps 250 \
             --device cpu \
@@ -55,5 +64,6 @@ jobs:
         run: |
           echo "## Proton training finished" >> "$GITHUB_STEP_SUMMARY"
           echo "- Bounded CPU run: at most 3 minutes or 250 optimizer steps." >> "$GITHUB_STEP_SUMMARY"
-          echo "- Only explicitly approved collective lessons marked training_eligible are included in the corpus." >> "$GITHUB_STEP_SUMMARY"\n          echo "- The checkpoint is attached as a workflow artifact for 30 days." >> "$GITHUB_STEP_SUMMARY"
+          echo "- Only explicitly approved collective lessons marked training_eligible are included." >> "$GITHUB_STEP_SUMMARY"
+          echo "- The checkpoint is attached as a workflow artifact for 30 days." >> "$GITHUB_STEP_SUMMARY"
           echo "- This experimental character-level model is not yet a capable conversational or coding AI." >> "$GITHUB_STEP_SUMMARY"
