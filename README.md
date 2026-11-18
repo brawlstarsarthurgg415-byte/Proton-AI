@@ -265,3 +265,20 @@ Este projeto usa a licença MIT. Consulte o arquivo [LICENSE](LICENSE).
 ---
 
 <p align="center"><strong>Proton-AI — aprendendo, construindo e evoluindo passo a passo.</strong><br><sub>Projeto experimental: recursos planejados não são recursos já implementados.</sub></p>
+
+
+## 🌐 Rede coletiva de ensinamentos
+
+O módulo experimental `proton-collective` permite preparar contribuições locais, publicar propostas no GitHub, baixar um feed público aprovado e exportar lições selecionadas para o próximo treinamento neural.
+
+```bash
+proton-collective submit "Uma explicação documentada..." --source https://example.org/artigo
+proton-collective sync
+proton-collective export-training
+```
+
+Para publicar uma proposta, revise o arquivo local e configure `PROTON_GITHUB_TOKEN` com um token limitado a este repositório e permissão **Contents: write**. O comando `proton-collective publish ID` envia a proposta para `collective/incoming/`; publicar não significa aprovar.
+
+**Portões de confiança:** verificações locais de privacidade, fonte e duplicidade são heurísticas determinísticas, não outras IAs. Duas avaliações externas distintas podem ser registradas como etapa de revisão, mas ainda exigem curadoria do mantenedor. Só registros explicitamente aprovados em `collective/approved.jsonl`, com `training_eligible: true`, entram no corpus do treinamento do GitHub Actions. Declarações de propriedade de marcas ficam como declarações não verificadas e nunca entram no treino.
+
+O treinador atual modifica pesos PyTorch de um pequeno Transformer de caracteres. O workflow produz um checkpoint como artefato; a instalação automática desse checkpoint nos aparelhos e a integração com revisores de IA independentes ainda não estão implementadas. Consulte [collective/README.md](collective/README.md) para detalhes, privacidade e comandos.
