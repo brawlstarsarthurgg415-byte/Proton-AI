@@ -15,7 +15,7 @@ import torch.nn.functional as F
 from .model import ProtonTransformer
 
 ROOT = Path(__file__).resolve().parent.parent
-DEFAULT_DATA = ROOT / "data" / "starter.txt"
+DEFAULT_DATA = ROOT / "data" / "conversation-pt.txt"
 DEFAULT_OUT = ROOT / "checkpoints"
 
 
