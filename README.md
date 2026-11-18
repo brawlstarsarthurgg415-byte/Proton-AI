@@ -58,7 +58,7 @@ O Proton **não é um projeto somente em Python**. Cada linguagem tem uma respon
 
 A ideia é usar a linguagem mais adequada para cada subsistema, mantendo interfaces claras entre eles. Python é usado agora no experimento de treinamento neural porque o protótipo usa PyTorch; isso não substitui nem elimina Rust, C++, TypeScript, JavaScript ou Shell.
 
-## 🧠 Como o aprendizado funciona
+## 🧩 Arquitetura multilíngue\n\nCada linguagem tem uma responsabilidade específica. Veja a tabela completa de módulos, entradas, saídas e limites de integração em [docs/ARQUITETURA-MULTILINGUE.md](docs/ARQUITETURA-MULTILINGUE.md).\n\n## 🧠 Como o aprendizado funciona
 
 O Proton separa três coisas diferentes:
 
