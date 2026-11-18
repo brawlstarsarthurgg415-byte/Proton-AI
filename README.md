@@ -126,6 +126,26 @@ Se os testes passarem, os comportamentos cobertos continuam funcionando. Isso n�
 - As verificações locais não validam a verdade de uma informação. Esta versão não baixa nem executa atualizações automaticamente.
 - Futuras pesquisas online deverão guardar fontes e tratar páginas externas como conteúdo não confiável.
 
+## 📚 Sessão de estudos de 15 horas
+
+O Proton inclui um currículo inicial offline com lições introdutórias de programação, matemática, ciências, astronomia, física, biologia, história, geografia, inglês, comunicação, computação e pensamento crítico.
+
+Para iniciar uma sessão de 15 horas no Termux:
+
+```bash
+python -m proton.study --hours 15
+```
+
+O programa percorre as lições, faz ciclos de revisão com baixo uso de CPU e salva checkpoints em `data/study_progress.json`. Se parar com Ctrl+C, o progresso fica salvo; ao iniciar novamente, ele continua do próximo item. Para uma execução curta de teste:
+
+```bash
+python -m proton.study --hours 0.01 --interval 1
+```
+
+**Limites desta versão:** o currículo é pequeno e introdutório; não cobre todo o conhecimento humano, não pesquisa a internet, não faz perguntas adaptativas e não treina os pesos de uma rede neural. Repetir as lições por 15 horas não cria, por si só, um modelo inteligente. A etapa seguinte é adicionar fontes educacionais verificáveis, exercícios, avaliação e, separadamente, um pipeline real de treinamento.
+
+**No celular:** uma sessão de 15 horas pode aquecer o aparelho e consumir bateria. Use apenas com ventilação, evite superfícies que bloqueiem a dissipação de calor e interrompa se o aparelho aquecer demais. O Android pode suspender processos em segundo plano; mantenha o Termux aberto e não conte com execução garantida com o aplicativo fechado.
+
 ## 🧪 Testes
 
 ```bash
