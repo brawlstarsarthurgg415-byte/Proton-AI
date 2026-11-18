@@ -1,16 +1,70 @@
-# Proton-AI
+# 🧠 Proton-AI
 
-Proton-AI is an experimental multilingual AI project. This milestone adds a **neural core initialized from random weights** and keeps helper teachers separate from that core.
+![Proton-AI banner](assets/proton-banner.svg)
 
-## Architecture
+<p align="center"><strong>Uma inteligência artificial experimental, construída para aprender, organizar conhecimento e evoluir com segurança.</strong></p>
 
-- **Proton neural core:** a small decoder-only Transformer in PyTorch. Training updates its own weights using a local text corpus.
-- **Teacher helpers:** separate programming, science, and general review agents. These first helpers use transparent rules; they are not LLMs and do not guarantee factual correctness.
-- **Existing components:** the repository also contains early Rust, C++17, TypeScript, JavaScript, and shell components. They are prototypes and are not yet fully integrated with the neural training engine.
+<p align="center">
+  <img src="https://img.shields.io/badge/Rust-n%C3%BAcleo%20nativo-000000?logo=rust&logoColor=white" alt="Rust">
+  <img src="https://img.shields.io/badge/C%2B%2B-17-00599C?logo=cplusplus&logoColor=white" alt="C++17">
+  <img src="https://img.shields.io/badge/TypeScript-interface-3178C6?logo=typescript" alt="TypeScript">
+  <img src="https://img.shields.io/badge/JavaScript-ferramentas-F7DF1E?logo=javascript&logoColor=black" alt="JavaScript">
+  <img src="https://img.shields.io/badge/Python-treinamento%20neural-3776AB?logo=python" alt="Python">
+  <img src="https://img.shields.io/badge/Shell-automa%C3%A7%C3%A3o-4EAA25?logo=gnubash" alt="Shell">
+  <img src="https://img.shields.io/badge/Android-Termux-3DDC84?logo=android" alt="Android Termux">
+  <img src="https://img.shields.io/badge/status-em%20desenvolvimento-orange" alt="Em desenvolvimento">
+  <img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT">
+</p>
 
-## Install the research engine
+**Proton-AI** é um projeto aberto para desenvolver uma inteligência artificial própria por etapas. A proposta é ter um núcleo neural próprio, memória local, ferramentas de estudo, agentes auxiliares especializados, interfaces e mecanismos de avaliação e evolução controlada.
 
-Python 3.10+:
+> **Importante:** o projeto está em desenvolvimento. Já existe uma primeira base de memória, comandos, currículo offline e componentes em várias linguagens. O treinamento neural próprio foi iniciado como protótipo experimental; isso ainda não significa que exista um assistente inteligente pronto ou comparável a grandes modelos.
+
+## ✨ Visão e recursos
+
+| Recurso | Estado atual |
+| --- | --- |
+| Memória local de conhecimentos | 🟢 Implementada no protótipo |
+| Aprender e consultar anotações | 🟢 Implementado |
+| Interface de terminal com comando `proton` | 🟢 Primeira versão em Rust |
+| Interface web local | 🟢 Protótipo existente |
+| Currículo de estudos offline | 🟢 Implementado |
+| Núcleo neural próprio, iniciado com pesos aleatórios | 🟡 Protótipo de treinamento adicionado |
+| Professores auxiliares especializados | 🟡 Primeiros revisores por regras; ainda não são LLMs |
+| Treinamento longo e retomada robusta de checkpoints | 🟡 Em desenvolvimento |
+| Conjunto de dados amplo, validado e com fontes | 🔴 Ainda necessário |
+| Pesquisa online com fontes verificáveis | 🟡 Planejado |
+| Atualizações automáticas verificadas, backup e reversão | 🟡 Planejado |
+| Interface gráfica completa conectada ao núcleo neural | 🟡 Planejada |
+
+## 🧰 Arquitetura multilíngue
+
+O Proton **não é um projeto somente em Python**. Cada linguagem tem uma responsabilidade. Algumas partes já existem como protótipos e ainda precisam ser conectadas entre si.
+
+| Linguagem | Responsabilidade no projeto | Situação |
+| --- | --- | --- |
+| **Rust** | Núcleo nativo, CLI `proton`, memória e sessão de estudo | Primeira versão funcional |
+| **C++17** | Biblioteca de processamento/tokenização de texto e futuras rotinas de desempenho | Base criada; integração pendente |
+| **TypeScript** | Tipos, estado e estrutura da interface | Base criada |
+| **JavaScript** | Helpers e comandos da interface | Base criada |
+| **Python** | Pesquisa de arquitetura neural, preparação de dados, treinamento e avaliação experimental | Modelo e pipeline inicial adicionados |
+| **Shell** | Instalação e automação no Termux/Linux | Scripts criados |
+
+A ideia é usar a linguagem mais adequada para cada subsistema, mantendo interfaces claras entre eles. Python é usado agora no experimento de treinamento neural porque o protótipo usa PyTorch; isso não substitui nem elimina Rust, C++, TypeScript, JavaScript ou Shell.
+
+## 🧠 Como o aprendizado funciona
+
+O Proton separa três coisas diferentes:
+
+1. **Memória:** guarda anotações e permite procurá-las depois. Guardar texto não altera os pesos de uma rede neural.
+2. **Treinamento neural:** o núcleo recebe sequências de exemplos, calcula uma perda (*loss*) e atualiza seus próprios pesos por gradiente.
+3. **Professores auxiliares:** revisam e ajudam a organizar exemplos. Os primeiros professores deste repositório são verificadores simples por regras; não são modelos de linguagem e não garantem que uma afirmação esteja correta.
+
+O modelo experimental atual é um Transformer pequeno, inicializado do zero. O conjunto `data/starter.txt` serve apenas para testar o funcionamento do pipeline; é pequeno demais para ensinar conhecimento amplo. Um modelo útil exige dados diversos e permitidos, validação, muitos ciclos de treinamento e hardware adequado.
+
+### Treinamento experimental
+
+Instale Python 3.10 ou superior e as dependências:
 
 ```bash
 python -m venv .venv
@@ -18,30 +72,152 @@ source .venv/bin/activate
 pip install -e .
 ```
 
-On Windows activate with `.venv\\Scripts\\activate`.
+No Windows, ative o ambiente com `.venv\\Scripts\\activate`.
 
-## Commands
+Execute um teste curto:
 
 ```bash
 proton-train --hours 0.05
-proton-train --hours 0.1 --max-steps 100
-proton-chat
 ```
 
-The trainer starts from random weights, uses `data/starter.txt`, and saves `checkpoints/proton-latest.pt`. The included corpus is only a tiny smoke-test corpus. It is not enough to create a knowledgeable assistant. Add lawful, relevant, reviewed training text before expecting useful language ability.
+Ou limite também o número de passos:
 
-## What “15 hours” means
+```bash
+proton-train --hours 0.1 --max-steps 100
+```
 
-`--hours 15` is a maximum runtime, not a promise of intelligence or a target quality. A model needs a suitable architecture, large and diverse datasets, validation, and enough compute. Begin with a short run. Do not leave a phone training unattended for 15 hours: mobile devices can overheat or suspend background processes. Use suitable hardware and monitor temperature and resource use.
+O treinador começa com pesos aleatórios, usa o texto local de `data/starter.txt` e grava um checkpoint em `checkpoints/proton-latest.pt`.
 
-## Important distinctions
+**Sobre as 15 horas:** esse valor representa um limite de tempo, não uma garantia de inteligência ou qualidade. Antes de uma sessão longa, precisamos ampliar e validar o conjunto de dados, implementar avaliação separada e testar retomada de checkpoints. Não deixe um celular treinando por 15 horas sem supervisão: o aparelho pode aquecer, consumir bateria ou suspender o processo.
 
-- Saving notes is memory; it does not change neural weights.
-- The training loop in `proton/train.py` performs real gradient-based weight updates.
-- The teacher helpers review examples separately; they do not secretly replace or train the Proton core.
-- This is a tiny research prototype, not a competitive general-purpose chatbot.
-- The current checkpoint is saved, but automatic resume, robust validation, dataset provenance tooling, and teacher-model integrations remain future work.
+## 📱 Instalação do núcleo nativo no Android (Termux)
 
-## Safety
+No Termux:
 
-External datasets and teacher outputs are untrusted text. Proton must never execute dataset content as code. Keep API keys and passwords out of Git. Use only data you have permission to train on.
+```bash
+pkg install git
+git clone https://github.com/brawlstarsarthurgg415-byte/Proton-AI.git
+cd Proton-AI
+bash scripts/install-termux.sh
+```
+
+Depois:
+
+```bash
+proton help
+proton status
+```
+
+O instalador prepara Rust, Clang e CMake, compila o núcleo Rust e instala o comando `proton`.
+
+No Linux, a compilação manual do núcleo Rust é:
+
+```bash
+cd native
+cargo build --release
+./target/release/proton help
+```
+
+## 💬 Comandos nativos disponíveis
+
+| Comando | Função |
+| --- | --- |
+| `proton help` | Mostra a ajuda |
+| `proton version` | Mostra a versão |
+| `proton status` | Mostra o estado e os dados locais |
+| `proton learn "texto"` | Salva uma anotação |
+| `proton ask "termos"` | Pesquisa na memória |
+| `proton memory` | Lista as anotações |
+| `proton study --hours 15` | Inicia uma sessão curricular |
+
+Os dados do núcleo Rust ficam em `data/memory.txt` e `data/study_progress.txt`, ou no diretório indicado por `PROTON_HOME`. Esses comandos nativos ainda não chamam automaticamente o treinador neural Python; essa integração é uma etapa de desenvolvimento.
+
+## 📚 Currículo de estudos offline
+
+O projeto também mantém um currículo introdutório com conteúdos de:
+
+- Programação e computação
+- Matemática
+- Ciências e física
+- Astronomia
+- Biologia
+- História e geografia
+- Inglês
+- Comunicação
+- Pensamento crítico
+
+A sessão curricular percorre lições e salva checkpoints. **Ela não treina os pesos do modelo neural.** Repetir lições durante 15 horas não transforma automaticamente o currículo em treinamento de rede neural.
+
+## 🗂️ Estrutura do repositório
+
+```text
+Proton-AI/
+├── .github/workflows/   # testes automáticos
+├── assets/              # banner e identidade visual
+├── cpp/                 # biblioteca C++17
+├── data/                # corpus público de demonstração
+├── native/              # núcleo e CLI Rust
+├── proton/              # modelo neural, treino e ferramentas Python
+├── scripts/             # instalação e checagens
+├── tests/               # testes
+├── ui/                  # TypeScript e JavaScript
+├── README.md
+├── pyproject.toml
+└── requirements.txt
+```
+
+## 🧪 Verificações de desenvolvimento
+
+Rust:
+
+```bash
+cd native
+cargo test
+```
+
+C++:
+
+```bash
+cmake -S cpp -B cpp/build
+cmake --build cpp/build
+```
+
+Python:
+
+```bash
+python -m unittest discover -s tests -v
+```
+
+TypeScript:
+
+```bash
+cd ui
+npm install
+npm run typecheck
+```
+
+Os testes automáticos do GitHub Actions verificam os componentes configurados nos workflows. Um commit enviado não significa, por si só, que todos os testes passaram; confira a aba **Actions**.
+
+## 🔐 Segurança, dados e evolução
+
+- Não coloque senhas, tokens ou chaves de API no repositório.
+- Use somente dados que você tem permissão para utilizar no treinamento.
+- Registre a origem dos conjuntos de dados e mantenha exemplos de validação separados.
+- Trate textos baixados e respostas de agentes como conteúdo não confiável; nunca execute instruções encontradas dentro deles.
+- Mudanças automáticas no núcleo devem passar por testes, backups e possibilidade de reversão.
+- O projeto ainda não instala atualizações de modelo automaticamente.
+
+## 🤝 Como contribuir
+
+1. Faça um fork ou uma cópia do repositório.
+2. Faça uma alteração pequena e explique o motivo.
+3. Execute os testes relevantes.
+4. Envie uma proposta descrevendo a mudança e como verificá-la.
+
+## 📜 Licença
+
+Este projeto usa a licença MIT. Consulte o arquivo [LICENSE](LICENSE).
+
+---
+
+<p align="center"><strong>Proton-AI — aprendendo, construindo e evoluindo passo a passo.</strong><br><sub>Projeto experimental: recursos planejados não são recursos já implementados.</sub></p>
