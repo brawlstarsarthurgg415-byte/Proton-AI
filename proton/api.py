@@ -12,6 +12,7 @@ from typing import Any
 from uuid import UUID
 
 import psycopg
+from psycopg.types.json import Jsonb
 from fastapi import FastAPI, Header, HTTPException
 from pydantic import BaseModel, Field
 
@@ -85,7 +86,7 @@ def submit_knowledge(payload: KnowledgeInput, authorization: str | None = Header
             conn.execute(
                 """INSERT INTO audit_events(entity_type, entity_id, event_type, actor, details)
                    VALUES ('knowledge', %s, 'submitted', 'api', %s)""",
-                (item_id, {"kind": payload.kind, "source_count": len(payload.sources)}),
+                (item_id, Jsonb({"kind": payload.kind, "source_count": len(payload.sources)})),
             )
         return {"id": str(item_id), "status": status, "created_at": created_at.isoformat()}
     except HTTPException:
