@@ -1,0 +1,10 @@
+[package]
+name = "proton"
+version = "0.3.0"
+edition = "2021"
+description = "Proton-AI native command-line core"
+license = "MIT"
+
+[[bin]]
+name = "proton"
+path = "src/main.rs"
