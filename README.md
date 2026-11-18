@@ -36,6 +36,7 @@
 | Interface web local | 🟢 Protótipo existente |
 | Currículo de estudos offline | 🟢 Implementado |
 | Núcleo neural próprio, iniciado com pesos aleatórios | 🟡 Protótipo de treinamento adicionado |
+| Corpus inicial de diálogos em português | 🟡 Adicionado; ainda pequeno e experimental |
 | Professores auxiliares especializados | 🟡 Primeiros revisores por regras; ainda não são LLMs |
 | Treinamento longo e retomada robusta de checkpoints | 🟡 Em desenvolvimento |
 | Conjunto de dados amplo, validado e com fontes | 🔴 Ainda necessário |
@@ -76,7 +77,7 @@ O Proton separa três coisas diferentes:
 2. **Treinamento neural:** o núcleo recebe sequências de exemplos, calcula uma perda (*loss*) e atualiza seus próprios pesos por gradiente.
 3. **Professores auxiliares:** revisam e ajudam a organizar exemplos. Os primeiros professores deste repositório são verificadores simples por regras; não são modelos de linguagem e não garantem que uma afirmação esteja correta.
 
-O modelo experimental atual é um Transformer pequeno, inicializado do zero. O conjunto `data/starter.txt` serve apenas para testar o funcionamento do pipeline; é pequeno demais para ensinar conhecimento amplo. Um modelo útil exige dados diversos e permitidos, validação, muitos ciclos de treinamento e hardware adequado.
+O modelo experimental atual é um Transformer pequeno, inicializado do zero e baseado em caracteres. O arquivo `data/conversation-pt.txt` contém diálogos originais em português para começar a expor o modelo a padrões de conversa; `data/starter.txt` acrescenta exemplos gerais. Ambos são pequenos e insuficientes para produzir conversa confiável. O modelo ainda não tem tokenizer BPE nem ajuste de instruções, portanto não espere respostas naturais só por treinar esse corpus. Um modelo útil exige dados diversos e permitidos, validação independente, tokenizer adequado, treinamento e hardware compatíveis.
 
 ### Treinamento experimental
 
@@ -102,7 +103,7 @@ Ou limite também o número de passos:
 proton-train --hours 0.1 --max-steps 100
 ```
 
-O treinador começa com pesos aleatórios, separa 90% do texto para treino e 10% para validação, mede as duas perdas e grava um checkpoint em `checkpoints/proton-latest.pt`. Agora também aceita `--resume` para continuar um checkpoint compatível e parâmetros para reduzir/aumentar o modelo. O padrão é deliberadamente curto e limitado (até 500 passos ou cerca de 72 segundos), para evitar sessões longas acidentais.
+O treinador começa com pesos aleatórios, usa `data/conversation-pt.txt` por padrão, separa 90% do texto para treino e 10% para validação, mede as duas perdas e grava um checkpoint em `checkpoints/proton-latest.pt`. Agora também aceita `--resume` para continuar um checkpoint compatível e parâmetros para reduzir/aumentar o modelo. O padrão é deliberadamente curto e limitado (até 500 passos ou cerca de 72 segundos), para evitar sessões longas acidentais.
 
 Exemplo de execução controlada:
 
