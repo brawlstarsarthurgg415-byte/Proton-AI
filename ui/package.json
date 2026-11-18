@@ -1,0 +1,8 @@
+{
+  "name": "proton-ai-ui",
+  "version": "0.3.0",
+  "private": true,
+  "description": "TypeScript interface foundation for Proton-AI",
+  "scripts": {"typecheck": "tsc --noEmit"},
+  "devDependencies": {"typescript": "^5.7.3"}
+}
