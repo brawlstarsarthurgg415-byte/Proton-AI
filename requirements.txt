@@ -1,0 +1,2 @@
+# Proton-AI first prototype uses only the Python standard library.
+# Future optional dependencies will be listed here.
