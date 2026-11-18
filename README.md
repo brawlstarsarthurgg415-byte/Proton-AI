@@ -102,7 +102,21 @@ Ou limite também o número de passos:
 proton-train --hours 0.1 --max-steps 100
 ```
 
-O treinador começa com pesos aleatórios, usa o texto local de `data/starter.txt` e grava um checkpoint em `checkpoints/proton-latest.pt`.
+O treinador começa com pesos aleatórios, separa 90% do texto para treino e 10% para validação, mede as duas perdas e grava um checkpoint em `checkpoints/proton-latest.pt`. Agora também aceita `--resume` para continuar um checkpoint compatível e parâmetros para reduzir/aumentar o modelo. O padrão é deliberadamente curto e limitado (até 500 passos ou cerca de 72 segundos), para evitar sessões longas acidentais.
+
+Exemplo de execução controlada:
+
+```bash
+proton-train --hours 0.02 --max-steps 100
+```
+
+Para continuar um checkpoint compatível:
+
+```bash
+proton-train --hours 0.02 --max-steps 100 --resume
+```
+
+O checkpoint guarda pesos, estado do otimizador, vocabulário, configuração, passo e métricas. A retomada é recusada se o corpus ou a configuração não corresponderem. O arquivo de validação é uma divisão do mesmo corpus, portanto ainda não é um benchmark independente de conhecimento ou programação.
 
 **Sobre as 15 horas:** esse valor representa um limite de tempo, não uma garantia de inteligência ou qualidade. Antes de uma sessão longa, precisamos ampliar e validar o conjunto de dados, implementar avaliação separada e testar retomada de checkpoints. Não deixe um celular treinando por 15 horas sem supervisão: o aparelho pode aquecer, consumir bateria ou suspender o processo.
 
