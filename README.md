@@ -10,7 +10,13 @@
   <img src="https://img.shields.io/badge/TypeScript-interface-3178C6?logo=typescript" alt="TypeScript">
   <img src="https://img.shields.io/badge/JavaScript-ferramentas-F7DF1E?logo=javascript&logoColor=black" alt="JavaScript">
   <img src="https://img.shields.io/badge/Python-treinamento%20neural-3776AB?logo=python" alt="Python">
-  <img src="https://img.shields.io/badge/Shell-automa%C3%A7%C3%A3o-4EAA25?logo=gnubash" alt="Shell">\n  <img src="https://img.shields.io/badge/Go-utilit%C3%A1rios-00ADD8?logo=go" alt="Go">\n  <img src="https://img.shields.io/badge/Java-JVM-ED8B00?logo=openjdk" alt="Java">\n  <img src="https://img.shields.io/badge/Ruby-ferramentas-CC342D?logo=ruby" alt="Ruby">\n  <img src="https://img.shields.io/badge/PHP-web-777BB4?logo=php" alt="PHP">\n  <img src="https://img.shields.io/badge/C%23-.NET-512BD4?logo=dotnet" alt="C#">\n  <img src="https://img.shields.io/badge/Swift-adaptador-F05138?logo=swift" alt="Swift">
+  <img src="https://img.shields.io/badge/Shell-automa%C3%A7%C3%A3o-4EAA25?logo=gnubash" alt="Shell">
+  <img src="https://img.shields.io/badge/Go-utilit%C3%A1rios-00ADD8?logo=go" alt="Go">
+  <img src="https://img.shields.io/badge/Java-JVM-ED8B00?logo=openjdk" alt="Java">
+  <img src="https://img.shields.io/badge/Ruby-ferramentas-CC342D?logo=ruby" alt="Ruby">
+  <img src="https://img.shields.io/badge/PHP-web-777BB4?logo=php" alt="PHP">
+  <img src="https://img.shields.io/badge/C%23-.NET-512BD4?logo=dotnet" alt="C#">
+  <img src="https://img.shields.io/badge/Swift-adaptador-F05138?logo=swift" alt="Swift">
   <img src="https://img.shields.io/badge/Android-Termux-3DDC84?logo=android" alt="Android Termux">
   <img src="https://img.shields.io/badge/status-em%20desenvolvimento-orange" alt="Em desenvolvimento">
   <img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT">
@@ -56,9 +62,13 @@ O Proton **não é um projeto somente em Python**. Cada linguagem tem uma respon
 | **C#** | Ferramenta de validação de corpus no ecossistema .NET | CLI inicial |
 | **Swift** | Tokenização para futuras integrações Apple | Protótipo criado |
 
-A ideia é usar a linguagem mais adequada para cada subsistema, mantendo interfaces claras entre eles. Python é usado agora no experimento de treinamento neural porque o protótipo usa PyTorch; isso não substitui nem elimina Rust, C++, TypeScript, JavaScript ou Shell.
+A ideia é usar a linguagem mais adequada para cada subsistema, mantendo interfaces claras entre eles. Python é usado agora no experimento de treinamento neural porque o protótipo usa PyTorch; isso não substitui nem elimina Rust, C++, TypeScript, JavaScript, Shell, Go, Java, Ruby, PHP, C# ou Swift.
 
-## 🧩 Arquitetura multilíngue\n\nCada linguagem tem uma responsabilidade específica. Veja a tabela completa de módulos, entradas, saídas e limites de integração em [docs/ARQUITETURA-MULTILINGUE.md](docs/ARQUITETURA-MULTILINGUE.md).\n\n## 🧠 Como o aprendizado funciona
+## 🧩 Arquitetura multilíngue
+
+Cada linguagem tem uma responsabilidade específica. Veja a tabela completa de módulos, entradas, saídas e limites de integração em [docs/ARQUITETURA-MULTILINGUE.md](docs/ARQUITETURA-MULTILINGUE.md).
+
+## 🧠 Como o aprendizado funciona
 
 O Proton separa três coisas diferentes:
 
@@ -160,7 +170,13 @@ A sessão curricular percorre lições e salva checkpoints. **Ela não treina os
 Proton-AI/
 ├── .github/workflows/   # testes automáticos
 ├── assets/              # banner e identidade visual
-├── cpp/                 # biblioteca C++17\n├── csharp/              # ferramentas .NET em C#\n├── go/                  # utilitários Go para dados\n├── java/                # adaptador Java/JVM\n├── php/                 # adaptador HTTP PHP\n├── ruby/                # ferramentas de corpus Ruby\n├── swift/               # adaptador Swift
+├── cpp/                 # biblioteca C++17
+├── csharp/              # ferramentas .NET em C#
+├── go/                  # utilitários Go para dados
+├── java/                # adaptador Java/JVM
+├── php/                 # adaptador HTTP PHP
+├── ruby/                # ferramentas de corpus Ruby
+├── swift/               # adaptador Swift
 ├── data/                # corpus público de demonstração
 ├── native/              # núcleo e CLI Rust
 ├── proton/              # modelo neural, treino e ferramentas Python
