@@ -134,6 +134,14 @@ cargo build --release
 ./target/release/proton help
 ```
 
+## 🖥️ Terminal interativo Proton
+
+Execute apenas `proton` para abrir a interface de terminal com mascote ASCII e comandos no estilo de um agente de programação.
+
+Comandos visuais disponíveis: `/help`, `/plan`, `/permissions`, `/agents`, `/terminal`, `/files`, `/diff`, `/undo`, `/model`, `/status`, `/memory`, `/study`, `/clear` e `/exit`.
+
+**Limite atual:** essa é a primeira estrutura de interface. Os comandos de planejamento, agentes, terminal, edição de arquivos, diff e undo informam seu estado, mas ainda não executam tarefas inteligentes. O Proton precisa aprender programação e ganhar ferramentas reais antes de receber autonomia para alterar projetos.
+
 ## 💬 Comandos nativos disponíveis
 
 | Comando | Função |
