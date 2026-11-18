@@ -217,6 +217,31 @@ def publish_pending(record_id: str, *, token: str | None = None) -> str:
     return result.get("content", {}).get("html_url", api_url)
 
 
+
+def publish_all_pending(*, token: str | None = None) -> tuple[int, int]:
+    """Retry queued uploads; failed/offline proposals remain in the outbox."""
+    token = token or os.environ.get("PROTON_GITHUB_TOKEN")
+    if not token:
+        raise CollectiveError("Set PROTON_GITHUB_TOKEN to enable automatic uploads.")
+    sent = failed = 0
+    OUTBOX.mkdir(parents=True, exist_ok=True)
+    for path in sorted(OUTBOX.glob("*.json")):
+        try:
+            record = json.loads(path.read_text(encoding="utf-8"))
+            if record.get("published_at") or record.get("status") not in {
+                "pending_review", "declaration_unverified"
+            }:
+                continue
+            publish_pending(str(record["id"]), token=token)
+            record["published_at"] = _now()
+            record["publication_status"] = "uploaded_for_review"
+            path.write_text(json.dumps(record, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+            sent += 1
+        except (CollectiveError, OSError, KeyError, json.JSONDecodeError):
+            failed += 1
+    return sent, failed
+
+
 def export_training_text(output: Path, *, approved_path: Path = APPROVED) -> int:
     """Export approved, source-backed lesson text for next-character training."""
     rows = _read_jsonl(approved_path)
