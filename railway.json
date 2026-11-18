@@ -1,0 +1,15 @@
+{
+  "$schema": "https://railway.com/railway.schema.json",
+  "build": {
+    "builder": "RAILPACK",
+    "buildCommand": "pip install fastapi 'uvicorn[standard]' 'psycopg[binary]'"
+  },
+  "deploy": {
+    "startCommand": "python -m uvicorn proton.api:app --host 0.0.0.0 --port $PORT",
+    "preDeployCommand": ["python scripts/migrate_db.py"],
+    "healthcheckPath": "/health",
+    "healthcheckTimeout": 120,
+    "restartPolicyType": "ON_FAILURE",
+    "restartPolicyMaxRetries": 5
+  }
+}
