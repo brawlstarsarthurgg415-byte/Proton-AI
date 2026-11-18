@@ -52,6 +52,22 @@ fn learn(text: &str) -> io::Result<()> { if text.trim().is_empty() { println!("I
 fn memory() -> io::Result<()> { let data=read_memory()?; if data.trim().is_empty(){println!("Memoria vazia.");}else{print!("{data}");} Ok(()) }
 fn status() -> io::Result<()> { let d=ensure_data()?; let m=d.join("memory.txt"); let count=fs::read_to_string(m).unwrap_or_default().lines().count(); println!("Proton-AI {VERSION}\nMemoria: {count} anotacoes\nModo: interface demonstrativa\nCapacidade de programacao autonoma: ainda em treinamento\nDiretorio: {}",d.display()); Ok(()) }
 fn study(args: &[String]) -> io::Result<()> { let mut hours=15.0_f64; let mut interval=60_u64; let mut i=0; while i<args.len(){match args[i].as_str(){"--hours"=>{i+=1;hours=args.get(i).and_then(|v|v.parse().ok()).unwrap_or(0.0);},"--interval"=>{i+=1;interval=args.get(i).and_then(|v|v.parse().ok()).unwrap_or(60);},_=>{println!("Opcao desconhecida: {}",args[i]);return Ok(());}}i+=1;} if !hours.is_finite()||hours<=0.0{println!("--hours precisa ser maior que zero.");return Ok(());} let d=ensure_data()?; let cp=d.join("study_progress.txt"); let start=Instant::now(); let total=Duration::from_secs_f64(hours*3600.0); let mut index=fs::read_to_string(&cp).ok().and_then(|s|s.trim().parse::<usize>().ok()).unwrap_or(0)%LESSONS.len(); println!("Proton Study: {hours} horas. Ctrl+C interrompe; cada licao salva um checkpoint."); println!("Modo curricular offline: isto nao treina pesos de uma rede neural."); while start.elapsed()<total { let (subject,lesson)=LESSONS[index]; println!("Estudando [{subject}]: {lesson}"); index=(index+1)%LESSONS.len(); fs::write(&cp,index.to_string())?; let elapsed=start.elapsed(); if elapsed>=total {break;} thread::sleep(Duration::from_secs(interval).min(total-elapsed)); } println!("Sessao concluida. Progresso salvo em {}",cp.display()); Ok(()) }
+
+fn respond(input: &str) {
+    let msg=input.to_lowercase();
+    if ["oi","ola","olá","bom dia","boa tarde","boa noite","eai","e aí"].iter().any(|g| msg==*g || msg.starts_with(&format!("{g} "))) {
+        println!("Ola! Sou o Proton-AI, um projeto de inteligencia artificial em desenvolvimento. Ainda estou aprendendo; por enquanto consigo responder a algumas mensagens simples e executar os comandos listados em /help.");
+    } else if msg.contains("quem e voce") || msg.contains("quem é você") || msg.contains("quem e vc") || msg.contains("quem é vc") || msg=="quem e voce?" || msg=="quem é você?" {
+        println!("Sou o Proton-AI: uma inteligencia artificial experimental, com interface propria, memoria local e um curriculo inicial. Ainda nao tenho capacidade comprovada de programar ou editar projetos.");
+    } else if msg.contains("o que voce pode fazer") || msg.contains("o que você pode fazer") || msg.contains("que voce faz") || msg.contains("que você faz") {
+        println!("Neste momento posso mostrar /help, consultar /status, guardar anotacoes com 'proton learn ...' e executar o curriculo com 'proton study'. Planejamento, agentes, terminal e edicao de arquivos ainda sao recursos em desenvolvimento.");
+    } else if msg.contains("obrigado") || msg.contains("valeu") {
+        println!("De nada! Ainda estou em desenvolvimento. Use /help para conhecer os comandos disponiveis.");
+    } else {
+        println!("Ainda nao sei responder a isso. Minha conversa em linguagem natural e limitada; nao vou inventar uma resposta. Use /help para ver os comandos implementados.");
+    }
+}
+
 fn repl() -> io::Result<()> {
     banner();
     let stdin=io::stdin();
@@ -78,7 +94,8 @@ fn repl() -> io::Result<()> {
             "/undo" => println!("Desfazer alteracoes: ainda nao implementado; nenhuma alteracao de codigo foi feita."),
             "/model" => println!("Modelo neural proprio: prototipo experimental em treinamento. Capacidade de programacao ainda nao comprovada."),
             "/plan" => { if arg.trim().is_empty(){println!("Uso: /plan <descreva sua ideia>");}else{println!("Pedido recebido: {arg}\nEstado: o modo de planejamento visual esta ativo, mas o Proton ainda nao possui inteligencia suficiente para analisar o repositorio. Nenhum arquivo foi lido ou alterado.");}},
-            _ => println!("Ainda estou aprendendo a entender pedidos. Use /help para ver os comandos disponiveis.")
+            _ => respond(input)
+
         }
     }
     Ok(())
