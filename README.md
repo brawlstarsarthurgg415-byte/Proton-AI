@@ -48,7 +48,7 @@ O Proton **não é um projeto somente em Python**. Cada linguagem tem uma respon
 | **TypeScript** | Tipos, estado e estrutura da interface | Base criada |
 | **JavaScript** | Helpers e comandos da interface | Base criada |
 | **Python** | Pesquisa de arquitetura neural, preparação de dados, treinamento e avaliação experimental | Modelo e pipeline inicial adicionados |
-| **Shell** | Instalação e automação no Termux/Linux | Scripts criados |
+| **Shell** | Instalação e automação no Termux/Linux | Scripts criados |\n| **Go** | Verificação básica de corpus de treinamento | CLI e teste inicial |\n| **Java** | Tokenização Unicode para adaptadores JVM | Protótipo criado |\n| **Ruby** | Relatório de estatísticas de corpus | Ferramenta inicial |\n| **PHP** | Endpoint HTTP de status somente leitura | Protótipo criado |\n| **C#** | Ferramenta de validação de corpus no ecossistema .NET | CLI inicial |\n| **Swift** | Tokenização para futuras integrações Apple | Protótipo criado |
 
 A ideia é usar a linguagem mais adequada para cada subsistema, mantendo interfaces claras entre eles. Python é usado agora no experimento de treinamento neural porque o protótipo usa PyTorch; isso não substitui nem elimina Rust, C++, TypeScript, JavaScript ou Shell.
 
@@ -154,7 +154,7 @@ A sessão curricular percorre lições e salva checkpoints. **Ela não treina os
 Proton-AI/
 ├── .github/workflows/   # testes automáticos
 ├── assets/              # banner e identidade visual
-├── cpp/                 # biblioteca C++17
+├── cpp/                 # biblioteca C++17\n├── csharp/              # ferramentas .NET em C#\n├── go/                  # utilitários Go para dados\n├── java/                # adaptador Java/JVM\n├── php/                 # adaptador HTTP PHP\n├── ruby/                # ferramentas de corpus Ruby\n├── swift/               # adaptador Swift
 ├── data/                # corpus público de demonstração
 ├── native/              # núcleo e CLI Rust
 ├── proton/              # modelo neural, treino e ferramentas Python
