@@ -6,6 +6,7 @@ on:
     branches: [main]
     paths:
       - "data/starter.txt"
+      - "data/conversation-pt.txt"
       - "collective/approved.jsonl"
       - "proton/collective.py"
       - "proton/collective_cli.py"
@@ -45,7 +46,7 @@ jobs:
       - name: Export approved collective lessons
         run: |
           python -m proton.collective_cli export-training --output /tmp/collective-training.txt
-          cat data/starter.txt /tmp/collective-training.txt > /tmp/proton-training.txt
+          cat data/conversation-pt.txt data/starter.txt /tmp/collective-training.txt > /tmp/proton-training.txt
 
       - name: Train experimental Proton model
         run: |
@@ -71,4 +72,5 @@ jobs:
           echo "- Only explicitly approved collective lessons marked training_eligible are included." >> "$GITHUB_STEP_SUMMARY"
           echo "- The checkpoint is attached as a workflow artifact for 30 days." >> "$GITHUB_STEP_SUMMARY"
           echo "- This experimental character-level model is not yet a capable conversational or coding AI." >> "$GITHUB_STEP_SUMMARY"
-          echo "- The current corpus is small; a long run may overfit and is an engineering experiment, not a capability guarantee." >> "$GITHUB_STEP_SUMMARY"
+          echo "- The Portuguese conversation corpus is an initial dialogue-pattern dataset, not a broad language curriculum." >> "$GITHUB_STEP_SUMMARY"
+          echo "- The current character-level model is not instruction-tuned and may not produce coherent chat; a BPE tokenizer and conversational evaluation are still required." >> "$GITHUB_STEP_SUMMARY"
