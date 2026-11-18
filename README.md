@@ -5,10 +5,10 @@
 <p align="center"><strong>Uma inteligência artificial experimental, construída para aprender, organizar conhecimento e evoluir com segurança.</strong></p>
 
 <p align="center">
-  ![Python](https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&logoColor=white)
-  ![Android](https://img.shields.io/badge/Android-Termux-3DDC84?logo=android&logoColor=white)
-  ![Status](https://img.shields.io/badge/status-prot%C3%B3tipo%20inicial-orange)
-  ![License](https://img.shields.io/badge/license-MIT-blue)
+  <img src="https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&logoColor=white" alt="Python 3.11+">
+  <img src="https://img.shields.io/badge/Android-Termux-3DDC84?logo=android&logoColor=white" alt="Android Termux">
+  <img src="https://img.shields.io/badge/status-prot%C3%B3tipo%20inicial-orange" alt="Status: protótipo inicial">
+  <img src="https://img.shields.io/badge/license-MIT-blue" alt="Licença MIT">
 </p>
 
 **Proton-AI** é um projeto aberto para desenvolver uma inteligência artificial própria por etapas. A primeira versão oferece memória local, comandos no terminal e uma interface gráfica no navegador. O objetivo futuro é pesquisar arquiteturas, treinar e avaliar modelos próprios e adicionar agentes especializados.
@@ -37,8 +37,8 @@
 ```bash
 pkg update
 pkg install git python
-git clone https://github.com/brawlstarsarthurgg415-byte/-Proton-AI.git
-cd -Proton-AI
+git clone https://github.com/brawlstarsarthurgg415-byte/Proton-AI.git
+cd Proton-AI
 ```
 
 3. Inicie a versão de terminal:
