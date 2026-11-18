@@ -1,4 +1,4 @@
-[package]
+[lib]\npath = "src/lib.rs"\n\n[package]
 name = "proton"
 version = "0.3.0"
 edition = "2021"
