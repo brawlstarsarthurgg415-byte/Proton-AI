@@ -1,0 +1,31 @@
+{
+  "name": "Proton Brain 3B MoE - Android target",
+  "status": "design_target_not_mobile_ready",
+  "model": {
+    "vocab_size": 32000,
+    "context_length": 2048,
+    "hidden_size": 2048,
+    "num_layers": 16,
+    "num_heads": 16,
+    "num_experts": 8,
+    "experts_per_token": 2,
+    "expert_intermediate_size": 3584,
+    "dropout": 0.0,
+    "tie_embeddings": true
+  },
+  "deployment": {
+    "target": "android",
+    "weight_quantization_goal": "4-bit",
+    "weight_storage_estimate_gib": 1.47,
+    "runtime_memory": "additional memory required for activations, KV cache, runtime and temporary buffers",
+    "backend": "not implemented; evaluate ExecuTorch or a compatible native inference runtime",
+    "warning": "Do not instantiate or train this full profile on a phone. First validate the small MoE implementation, train on suitable hardware, quantize, and benchmark memory and thermal behavior on the exact Android device."
+  },
+  "architecture_notes": [
+    "Decoder-only causal Transformer",
+    "SwiGLU feed-forward experts",
+    "Top-2 sparse routing across 8 experts per MoE layer",
+    "RMSNorm and scaled dot-product causal attention",
+    "Tied token embedding and output projection"
+  ]
+}
