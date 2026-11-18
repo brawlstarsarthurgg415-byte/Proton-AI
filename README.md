@@ -11,7 +11,7 @@
   <img src="https://img.shields.io/badge/license-MIT-blue" alt="Licença MIT">
 </p>
 
-**Proton-AI** é um projeto aberto para desenvolver uma inteligência artificial própria por etapas. A primeira versão oferece memória local, comandos no terminal e uma interface gráfica no navegador. O objetivo futuro é pesquisar arquiteturas, treinar e avaliar modelos próprios e adicionar agentes especializados.
+**Proton-AI** é um projeto aberto para desenvolver uma inteligência artificial própria por etapas. A versão inicial oferece memória local, comandos no terminal, interface gráfica no navegador e três verificações locais independentes para revisar anotações antes de salvá-las. O objetivo futuro é pesquisar arquiteturas, treinar e avaliar modelos próprios e adicionar agentes especializados.
 
 > **Importante:** esta é a fundação inicial do projeto, não um modelo de linguagem já treinado. A memória desta versão salva e recupera anotações; ela ainda não aprende pesos de uma rede neural nem conversa com a capacidade de um grande chatbot.
 
@@ -20,11 +20,11 @@
 | Recurso | Situação |
 | --- | --- |
 | Memória local de conhecimentos | 🟢 Implementada |
-| Aprender anotações do usuário | 🟢 Implementado |
+| Aprender anotações com revisão estrutural local | 🟢 Implementado |
 | Consultar conhecimentos salvos | 🟢 Implementado |
 | Interface de terminal | 🟢 Implementada |
 | Interface gráfica local | 🟢 Implementada |
-| Agentes professores | 🟡 Planejado |
+| Verificadores locais independentes (não são LLMs) | 🟢 Implementados |\n| Agentes professores baseados em modelos de IA | 🟡 Planejado |
 | Treinamento de modelo próprio | 🟡 Planejado |
 | Pesquisa online com fontes | 🟡 Planejado |
 | Atualização validada e reversão | 🟡 Planejado |
@@ -69,7 +69,7 @@ No terminal, experimente:
 /quit
 ```
 
-- `/learn texto`: salva uma anotação na memória.
+- `/learn texto`: envia uma anotação para três verificações locais (clareza básica, origem e duplicidade); se passar, salva na memória.
 - `/ask pergunta`: procura anotações relacionadas à pergunta.
 - `/list`: mostra os conhecimentos salvos.
 - `/help`: mostra os comandos disponíveis.
@@ -83,7 +83,7 @@ O projeto está dividido em arquivos pequenos:
 
 | Caminho | Para que serve |
 | --- | --- |
-| `proton/core.py` | lógica de consulta |
+| `proton/core.py` | lógica de consulta |\n| `proton/learning.py` | fluxo de entrada e revisão de anotações |\n| `proton/teachers/local.py` | verificadores locais executados em paralelo |
 | `proton/memory.py` | gravação e leitura da memória |
 | `proton/cli.py` | interface de terminal |
 | `proton/web.py` | interface gráfica local |
@@ -123,7 +123,7 @@ Se os testes passarem, os comportamentos cobertos continuam funcionando. Isso n�
 - A pasta `data/` é ignorada pelo Git para não publicar suas anotações pessoais.
 - Nunca publique senhas, tokens ou chaves de API.
 - A interface web escuta somente em `127.0.0.1`, isto é, no próprio aparelho.
-- Esta versão não baixa nem executa atualizações automaticamente.
+- As verificações locais não validam a verdade de uma informação. Esta versão não baixa nem executa atualizações automaticamente.
 - Futuras pesquisas online deverão guardar fontes e tratar páginas externas como conteúdo não confiável.
 
 ## 🧪 Testes
