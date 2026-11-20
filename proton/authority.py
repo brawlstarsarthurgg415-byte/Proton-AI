@@ -7,6 +7,7 @@ import hmac
 import os
 import secrets
 import time
+from uuid import UUID
 from datetime import datetime, timedelta, timezone
 from urllib.parse import quote
 
@@ -303,7 +304,7 @@ def list_users(authorization: str | None = Header(default=None)):
 
 
 @router.patch("/admin/users/{user_id}/role")
-def change_role(user_id: str, payload: RoleChange, authorization: str | None = Header(default=None)):
+def change_role(user_id: UUID, payload: RoleChange, authorization: str | None = Header(default=None)):
     actor = _current_user(authorization)
     _require_ceo(actor)
     with db() as conn:
