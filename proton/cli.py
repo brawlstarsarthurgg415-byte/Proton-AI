@@ -1,4 +1,4 @@
-"""Interactive terminal for Proton-AI."""
+"""Interactive terminal for Proton."""
 from .core import Proton
 from .learning import LearningPipeline
 
@@ -9,24 +9,24 @@ HELP = """Comandos do Proton:
   /help          mostra esta ajuda
   /quit          encerra
 
-A revisão local verifica clareza básica, origem e duplicidade.
-Ela NÃO confirma se uma informação é verdadeira.
+Pode conversar normalmente também: o Proton responde no estilo informal brasileiro.
+A personalidade atual usa regras e contexto curto da sessão; ainda não é um LLM.
 """
 
 
 def main() -> None:
     proton = Proton()
     learning = LearningPipeline(proton.memory)
-    print("Proton-AI 0.2.0 — memória e revisão local")
-    print("Digite /help para ver os comandos.")
+    print("Proton-AI — bora trocar uma ideia? 😎")
+    print("Manda uma mensagem ou digite /help pra ver os comandos.")
     while True:
         try:
             command = input("\nVocê > ").strip()
         except (EOFError, KeyboardInterrupt):
-            print("\nProton encerrado.")
+            print("\nProton: Falou! Até a próxima KKKK.")
             break
         if command == "/quit":
-            print("Proton encerrado.")
+            print("Proton: Demorô, fui nessa! 😎")
             break
         if command == "/help":
             print(HELP)
@@ -36,25 +36,25 @@ def main() -> None:
                 status = "OK" if report.passed else "ATENÇÃO"
                 print(f"  [{status}] Professor {report.name}: {report.message}")
             if item:
-                print(f"Proton: anotação {item['id']} aprovada nas verificações locais e salva.")
+                print(f"Proton: Boa! Anotação {item['id']} salva depois das verificações locais.")
             else:
-                print("Proton: não salvei a anotação. Revise os avisos acima.")
+                print("Proton: Não salvei essa, confere os avisos ali em cima.")
         elif command.startswith("/ask "):
             results = proton.ask(command[5:])
             if not results:
-                print("Proton: ainda não encontrei isso na minha memória. Você pode me ensinar com /learn.")
+                print("Proton: Ainda não achei isso na minha memória. Se quiser, me ensina com /learn.")
             else:
-                print("Proton: encontrei estas anotações:")
+                print("Proton: Ó, achei isso aqui:")
                 for item in results:
                     print(f"  • {item['text']} (fonte: {item['source']})")
         elif command == "/list":
             items = proton.memory.all()
             if not items:
-                print("A memória ainda está vazia.")
+                print("Proton: Minha memória tá vazia ainda KKKK.")
             for item in items:
                 print(f"  {item['id']}. {item['text']}")
         elif command:
-            print("Comando não reconhecido. Digite /help.")
+            print(f"Proton: {proton.chat(command)}")
 
 
 if __name__ == "__main__":
