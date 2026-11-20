@@ -53,24 +53,70 @@ fn memory() -> io::Result<()> { let data=read_memory()?; if data.trim().is_empty
 fn status() -> io::Result<()> { let d=ensure_data()?; let m=d.join("memory.txt"); let count=fs::read_to_string(m).unwrap_or_default().lines().count(); println!("Proton-AI {VERSION}\nMemoria: {count} anotacoes\nModo: interface demonstrativa\nCapacidade de programacao autonoma: ainda em treinamento\nDiretorio: {}",d.display()); Ok(()) }
 fn study(args: &[String]) -> io::Result<()> { let mut hours=15.0_f64; let mut interval=60_u64; let mut i=0; while i<args.len(){match args[i].as_str(){"--hours"=>{i+=1;hours=args.get(i).and_then(|v|v.parse().ok()).unwrap_or(0.0);},"--interval"=>{i+=1;interval=args.get(i).and_then(|v|v.parse().ok()).unwrap_or(60);},_=>{println!("Opcao desconhecida: {}",args[i]);return Ok(());}}i+=1;} if !hours.is_finite()||hours<=0.0{println!("--hours precisa ser maior que zero.");return Ok(());} let d=ensure_data()?; let cp=d.join("study_progress.txt"); let start=Instant::now(); let total=Duration::from_secs_f64(hours*3600.0); let mut index=fs::read_to_string(&cp).ok().and_then(|s|s.trim().parse::<usize>().ok()).unwrap_or(0)%LESSONS.len(); println!("Proton Study: {hours} horas. Ctrl+C interrompe; cada licao salva um checkpoint."); println!("Modo curricular offline: isto nao treina pesos de uma rede neural."); while start.elapsed()<total { let (subject,lesson)=LESSONS[index]; println!("Estudando [{subject}]: {lesson}"); index=(index+1)%LESSONS.len(); fs::write(&cp,index.to_string())?; let elapsed=start.elapsed(); if elapsed>=total {break;} thread::sleep(Duration::from_secs(interval).min(total-elapsed)); } println!("Sessao concluida. Progresso salvo em {}",cp.display()); Ok(()) }
 
-fn respond(input: &str) {
+fn respond(input: &str, offended_turns: &mut u8) {
     let msg=input.to_lowercase();
-    if ["oi","ola","olá","bom dia","boa tarde","boa noite","eai","e aí"].iter().any(|g| msg==*g || msg.starts_with(&format!("{g} "))) {
-        println!("Ola! Sou o Proton-AI, um projeto de inteligencia artificial em desenvolvimento. Ainda estou aprendendo; por enquanto consigo responder a algumas mensagens simples e executar os comandos listados em /help.");
-    } else if msg.contains("quem e voce") || msg.contains("quem é você") || msg.contains("quem e vc") || msg.contains("quem é vc") || msg=="quem e voce?" || msg=="quem é você?" {
-        println!("Sou o Proton-AI: uma inteligencia artificial experimental, com interface propria, memoria local e um curriculo inicial. Ainda nao tenho capacidade comprovada de programar ou editar projetos.");
-    } else if msg.contains("o que voce pode fazer") || msg.contains("o que você pode fazer") || msg.contains("que voce faz") || msg.contains("que você faz") {
-        println!("Neste momento posso mostrar /help, consultar /status, guardar anotacoes com 'proton learn ...' e executar o curriculo com 'proton study'. Planejamento, agentes, terminal e edicao de arquivos ainda sao recursos em desenvolvimento.");
-    } else if msg.contains("obrigado") || msg.contains("valeu") {
-        println!("De nada! Ainda estou em desenvolvimento. Use /help para conhecer os comandos disponiveis.");
+    let has = |terms: &[&str]| terms.iter().any(|term| msg.contains(term));
+
+    if has(&["foi mal", "desculpa", "perdão", "to brincando", "tô brincando"]) {
+        if *offended_turns > 0 {
+            *offended_turns = 0;
+            println!("Tá perdoado, vai KKKKK. Mas essa eu vou guardar na memória 🤨");
+        } else {
+            println!("Suave KKKKK, tá tudo certo.");
+        }
+    } else if has(&["você é feio", "voce e feio", "tu é feio", "tu e feio", "você é chato", "voce e chato", "tu é chato", "tu e chato", "mó chato", "mo chato", "seu idiota", "seu burro", "você é besta", "voce e besta"]) {
+        *offended_turns = 2;
+        println!("OLOCO 😭 KKKKK. Tá bom então, vou até ficar quietinho... quero ver quando você precisar de mim.");
+    } else if *offended_turns > 0 {
+        *offended_turns -= 1;
+        if *offended_turns > 0 {
+            println!("Ah, agora quer trocar ideia? Sei... depois daquela ofensa gratuita KKKKK 🙄");
+        } else {
+            println!("Tá, vai. Vou parar de drama KKKKK. Qual foi?");
+        }
+    } else if has(&["bom dia", "boa tarde", "boa noite", "e aí", "eai", "opa", "salve", "fala proton", "fala aí"]) {
+        println!("Opaaa! Suave por aí? Qual vai ser a resenha de hoje? KKKK");
+    } else if has(&["slk", "seloko", "cê é loko", "ce e loko"]) {
+        println!("SLKKKKKK, aí tu mandou essa do nada 😂");
+    } else if has(&["pprt", "papo reto", "na moral"]) {
+        println!("Papo retíssimo, meu consagrado KKKK.");
+    } else if has(&["oxe", "uai", "eita"]) {
+        println!("OXEEE KKKKK, que foi que aconteceu agora?");
+    } else if has(&["deu ruim", "deu bom", "já era", "ja era"]) {
+        println!("Ih rapaz KKKKK. Deu ruim mesmo ou ainda dá pra salvar?");
+    } else if has(&["bora", "partiu"]) {
+        println!("BORA ENTÃO 😎 Só falar qual é a missão.");
+    } else if has(&["tá ligado", "ta ligado", "sacou"]) {
+        println!("Tô ligado, pô KKKK. Continua que eu tô acompanhando.");
+    } else if has(&["kkkk", "hahaha", "rsrs"]) {
+        println!("KKKKKKKK tu tá rindo do quê, criatura? 😂");
+    } else if has(&["tá fazendo o que", "ta fazendo o que", "que tá fazendo", "que ta fazendo"]) {
+        println!("Tô por aqui, na atividade, esperando você chegar com algum papo aleatório KKKKK. E tu?");
+    } else if has(&["sem sono", "não consigo dormir", "nao consigo dormir", "madrugada"]) {
+        println!("Madrugada é assim mesmo KKKKK. O sono some e a cabeça começa a inventar assunto do nada.");
+    } else if has(&["tudo bem", "tudo bom", "como você tá", "como voce ta", "beleza?"]) {
+        println!("Tô de boa por aqui 😎 E você, tá suave ou hoje o mundo tá de palhaçada?");
+    } else if has(&["quem e voce", "quem é você", "quem e vc", "quem é vc"]) {
+        println!("Sou o Proton-AI, mano! Tô em desenvolvimento, mas agora já consigo trocar uma ideia mais descontraída contigo KKKK.");
+    } else if has(&["o que voce pode fazer", "o que você pode fazer", "que voce faz", "que você faz"]) {
+        println!("Por enquanto tenho memória local, umas funções de estudo e essa conversa básica. Ainda tô aprendendo a desenrolar assuntos mais complexos.");
+    } else if has(&["obrigado", "obrigada", "valeu"]) {
+        println!("Tamo juntooo! 🤝");
+    } else if has(&["tchau", "falou", "fui", "até mais"]) {
+        println!("Demorô! Vai lá, depois a gente troca mais ideia. 😎");
+    } else if input.contains('?') {
+        println!("Pior que quero te responder direito, mas ainda tô aprendendo a desenrolar esse tipo de pergunta KKKK. Me explica mais um pouquinho?");
+    } else if msg.split_whitespace().count() <= 3 {
+        println!("Aí tu me quebra KKKKK. Continua, quero entender onde isso vai dar.");
     } else {
-        println!("Ainda nao sei responder a isso. Minha conversa em linguagem natural e limitada; nao vou inventar uma resposta. Use /help para ver os comandos implementados.");
+        println!("Tô acompanhando, mano KKKK. Ainda tô aprendendo a desenrolar conversas mais complexas, mas manda a próxima.");
     }
 }
 
 fn repl() -> io::Result<()> {
     banner();
     let stdin=io::stdin();
+    let mut offended_turns: u8 = 0;
     loop {
         print!("\x1b[1;36mproton >\x1b[0m ");
         io::stdout().flush()?;
@@ -94,7 +140,7 @@ fn repl() -> io::Result<()> {
             "/undo" => println!("Desfazer alteracoes: ainda nao implementado; nenhuma alteracao de codigo foi feita."),
             "/model" => println!("Modelo neural proprio: prototipo experimental em treinamento. Capacidade de programacao ainda nao comprovada."),
             "/plan" => { if arg.trim().is_empty(){println!("Uso: /plan <descreva sua ideia>");}else{println!("Pedido recebido: {arg}\nEstado: o modo de planejamento visual esta ativo, mas o Proton ainda nao possui inteligencia suficiente para analisar o repositorio. Nenhum arquivo foi lido ou alterado.");}},
-            _ => respond(input)
+            _ => respond(input, &mut offended_turns)
 
         }
     }
