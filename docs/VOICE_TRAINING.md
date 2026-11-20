@@ -6,8 +6,8 @@ O menu administrativo local é aberto pelo comando discreto `/p-admin` no termin
 
 1. Instale o aplicativo Termux:API e conceda permissão de microfone ao Android.
 2. No Termux, instale a ferramenta: `pkg install termux-api`.
-3. Na pasta do repositório, instale a dependência e o pacote: `pip install -e ".[voice]"`.
-4. Inicie `proton` e digite `/p-admin`.
+3. Na pasta do repositório, instale a dependência de criptografia: `pip install "cryptography>=42"`.
+4. Entre na pasta do repositório, inicie `proton` e digite `/p-admin`. Assim o Python encontra o módulo local.
 
 O menu apresenta cinco frases e grava até oito segundos por frase usando `termux-microphone-record`. Os arquivos temporários são apagados após a criptografia. As amostras criptografadas ficam em `data/voice_vault/samples` (ou em `$PROTON_HOME/voice_vault/samples` quando PROTON_HOME estiver definido).
 
