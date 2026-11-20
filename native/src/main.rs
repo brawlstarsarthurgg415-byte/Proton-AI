@@ -1,4 +1,4 @@
-use std::{env, fs::{self, OpenOptions}, io::{self, BufRead, Write}, path::PathBuf, thread, time::{Duration, Instant}};
+use std::{env, fs::{self, OpenOptions}, io::{self, BufRead, Write}, path::PathBuf, process::Command, thread, time::{Duration, Instant}};
 
 const VERSION: &str = "0.4.0";
 const LESSONS: &[(&str, &str)] = &[
@@ -127,6 +127,15 @@ fn repl() -> io::Result<()> {
         let (command,arg)=input.split_once(' ').unwrap_or((input,""));
         match command {
             "/help" => help(),
+            "/p-admin" => {
+                let status = Command::new("python3").args(["-m", "proton.voice_admin"]).status()
+                    .or_else(|_| Command::new("python").args(["-m", "proton.voice_admin"]).status());
+                match status {
+                    Ok(result) if result.success() => println!("Menu de voz encerrado."),
+                    Ok(_) => println!("Não foi possível abrir o menu. Confira Python e a dependência voice."),
+                    Err(_) => println!("Python não encontrado. Instale Python e o pacote Proton com a opção voice."),
+                }
+            },
             "/exit" | "/quit" => {println!("Proton encerrado.");break;},
             "/clear" => print!("\x1b[2J\x1b[H"),
             "/status" => status()?,
