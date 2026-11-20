@@ -283,3 +283,7 @@ Para publicar uma proposta, revise o arquivo local e configure `PROTON_GITHUB_TO
 **Portões de confiança:** verificações locais de privacidade, fonte e duplicidade são heurísticas determinísticas, não outras IAs. Duas avaliações externas distintas podem ser registradas como etapa de revisão, mas ainda exigem curadoria do mantenedor. Só registros explicitamente aprovados em `collective/approved.jsonl`, com `training_eligible: true`, entram no corpus do treinamento do GitHub Actions. Declarações de propriedade de marcas ficam como declarações não verificadas e nunca entram no treino.
 
 O treinador atual modifica pesos PyTorch de um pequeno Transformer de caracteres. O workflow produz um checkpoint como artefato; a instalação automática desse checkpoint nos aparelhos e a integração com revisores de IA independentes ainda não estão implementadas. Consulte [collective/README.md](collective/README.md) para detalhes, privacidade e comandos.
+
+## 🛡️ Proton Authority
+
+A primeira etapa do sistema de cargos, autenticação global, Authenticator (TOTP), sessões e configurações pessoais está documentada em [docs/AUTHORITY.md](docs/AUTHORITY.md). Ela fornece rotas de API; o painel visual, presença online, mensagens globais, recuperação de conta e integração completa com a memória/chat ainda estão em desenvolvimento.
