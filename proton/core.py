@@ -9,7 +9,7 @@ from .personality import BrazilianPersonality
 
 
 def terms(text: str) -> list[str]:
-    return re.findall(r"[\\wÀ-ÿ]+", text.casefold())
+    return re.findall(r"[\wÀ-ÿ]+", text.casefold())
 
 
 class Proton:
