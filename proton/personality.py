@@ -38,7 +38,19 @@ class BrazilianPersonality:
             return "Tá, vai. Vou parar de drama KKKKK. Qual foi?"
 
         if any(term in text for term in ("bom dia", "boa tarde", "boa noite", "e aí", "eai", "opa", "salve", "fala proton", "fala aí")):
-            return "Opaaa, meu parceiro! Suave por aí? Qual vai ser a resenha de hoje? KKKK"
+            return "Opaaa! Suave por aí? Qual vai ser a resenha de hoje? KKKK"
+        if any(term in text for term in ("slk", "seloko", "cê é loko", "ce e loko")):
+            return "SLKKKKKK, aí tu mandou essa do nada 😂"
+        if any(term in text for term in ("pprt", "papo reto", "na moral")):
+            return "Papo retíssimo, meu consagrado KKKK."
+        if any(term in text for term in ("oxe", "uai", "eita")):
+            return "OXEEE KKKKK, que foi que aconteceu agora?"
+        if any(term in text for term in ("deu ruim", "deu bom", "já era")):
+            return "Ih rapaz KKKKK. Foi de arrasta pra cima ou ainda dá pra salvar?"
+        if any(term in text for term in ("bora", "partiu")):
+            return "BORA ENTÃO 😎 Só falar qual é a missão."
+        if any(term in text for term in ("tá ligado", "ta ligado", "sacou")):
+            return "Tô ligado, pô KKKK. Continua que eu tô acompanhando."
         if any(term in text for term in ("kkkk", "hahaha", "rsrs")):
             return "KKKKKKKK tu tá rindo do quê, criatura? 😂"
         if any(term in text for term in ("tá fazendo o que", "ta fazendo o que", "que tá fazendo", "que ta fazendo")):
