@@ -14,10 +14,12 @@ from uuid import UUID, uuid4
 import psycopg
 from psycopg.types.json import Jsonb
 from fastapi import FastAPI, Header, HTTPException
+from fastapi.responses import FileResponse
+from pathlib import Path
 from pydantic import BaseModel, Field
 
 from .personality import BrazilianPersonality
-from .authority import router as authority_router
+from .authority import router as authority_router, _current_user
 
 DATABASE_URL = os.environ.get("DATABASE_URL")
 API_KEY = os.environ.get("PROTON_API_KEY")
@@ -158,3 +160,28 @@ def get_knowledge(item_id: UUID, authorization: str | None = Header(default=None
     return {"id": str(row[0]), "content": row[1], "kind": row[2], "source_label": row[3],
             "status": row[4], "guardian_verdict": row[5], "training_eligible": row[6],
             "created_at": row[7].isoformat(), "sources": [{"url": s[0], "title": s[1]} for s in sources]}
+
+
+
+@app.get("/", include_in_schema=False)
+def proton_home():
+    """Serve the mobile-friendly Proton-AI web interface."""
+    page = Path(__file__).resolve().parent.parent / "ui" / "index.html"
+    if not page.is_file():
+        raise HTTPException(status_code=404, detail="Proton-AI interface not installed")
+    return FileResponse(page)
+
+
+@app.post("/app/chat")
+def app_chat(payload: ChatInput, authorization: str | None = Header(default=None)):
+    """Chat endpoint for signed-in panel users; never exposes the server API key."""
+    user = _current_user(authorization)
+    session_id = payload.session_id or str(uuid4())
+    scoped_id = f"{user[0]}:{session_id}"
+    personality = chat_sessions.get(scoped_id)
+    if personality is None:
+        if len(chat_sessions) >= 1000:
+            chat_sessions.pop(next(iter(chat_sessions)))
+        personality = BrazilianPersonality()
+        chat_sessions[scoped_id] = personality
+    return {"session_id": session_id, "reply": personality.reply(payload.message)}
