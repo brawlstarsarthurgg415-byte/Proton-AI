@@ -25,7 +25,10 @@ def main() -> None:
         except (EOFError, KeyboardInterrupt):
             print("\nProton: Falou! Até a próxima KKKK.")
             break
-        if command == "/quit":
+        if command == "/p-admin":
+            from .voice_admin import main as voice_admin_main
+            voice_admin_main()
+        elif command == "/quit":
             print("Proton: Demorô, fui nessa! 😎")
             break
         if command == "/help":
