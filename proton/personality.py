@@ -27,7 +27,7 @@ class BrazilianPersonality:
                 return "Tá perdoado, vai KKKKK. Mas essa eu vou guardar na memória 🤨"
             return "Suave KKKKK, tá tudo certo."
 
-        if any(term in text for term in ("você é feio", "tu é feio", "você é chato", "tu é chato", "seu idiota", "seu burro", "você é besta", "tu é besta")):
+        if any(term in text for term in ("você é feio", "tu é feio", "você é chato", "tu é chato", "você é mó chato", "tu é mó chato", "muito chato", "seu idiota", "seu burro", "você é besta", "tu é besta")):
             self.offended_turns = 2
             return "OLOCO 😭 KKKKK. Tá bom então, vou até ficar quietinho... quero ver quando você precisar de mim."
 
