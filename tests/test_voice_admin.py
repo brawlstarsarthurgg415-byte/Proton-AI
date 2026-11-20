@@ -1,3 +1,4 @@
+import importlib.util
 import unittest
 
 from proton.voice_admin import _derive, _fernet
@@ -12,6 +13,7 @@ class VoiceVaultTests(unittest.TestCase):
         salt = b"0123456789abcdef"
         self.assertNotEqual(_derive("senha-um", salt), _derive("senha-dois", salt))
 
+    @unittest.skipUnless(importlib.util.find_spec("cryptography"), "install the voice extra")
     def test_encrypted_sample_round_trip(self):
         salt = b"0123456789abcdef"
         vault = _fernet("senha-de-teste", salt)
