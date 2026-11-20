@@ -11,18 +11,16 @@ import re
 class BrazilianPersonality:
     def __init__(self) -> None:
         self.offended_turns = 0
-        self.last_topic = ""
 
     @staticmethod
     def _clean(text: str) -> str:
-        return re.sub(r"\\s+", " ", text.casefold()).strip()
+        return re.sub(r"\s+", " ", text.casefold()).strip()
 
     def reply(self, message: str) -> str:
         text = self._clean(message)
         if not text:
             return "Manda alguma coisa aí, pô KKKK."
 
-        # A brincadeira continua por alguns turnos, sem ficar presa para sempre.
         if any(term in text for term in ("foi mal", "desculpa", "perdão", "to brincando", "tô brincando")):
             if self.offended_turns:
                 self.offended_turns = 0
@@ -41,29 +39,20 @@ class BrazilianPersonality:
 
         if any(term in text for term in ("bom dia", "boa tarde", "boa noite", "e aí", "eai", "opa", "salve", "fala proton", "fala aí")):
             return "Opaaa, meu parceiro! Suave por aí? Qual vai ser a resenha de hoje? KKKK"
-
-        if any(term in text for term in ("kkkk", "哈哈", "hahaha", "rsrs")):
+        if any(term in text for term in ("kkkk", "hahaha", "rsrs")):
             return "KKKKKKKK tu tá rindo do quê, criatura? 😂"
-
         if any(term in text for term in ("tá fazendo o que", "ta fazendo o que", "que tá fazendo", "que ta fazendo")):
             return "Tô por aqui, na atividade, esperando você chegar com algum papo aleatório KKKKK. E tu?"
-
         if any(term in text for term in ("sem sono", "não consigo dormir", "nao consigo dormir", "madrugada")):
             return "Madrugada é assim mesmo KKKKK. O sono some e a cabeça começa a inventar assunto do nada."
-
         if any(term in text for term in ("tudo bem", "tudo bom", "como você tá", "como voce ta", "beleza?")):
             return "Tô de boa por aqui 😎 E você, tá suave ou hoje o mundo tá de palhaçada?"
-
         if any(term in text for term in ("obrigado", "obrigada", "valeu")):
             return "Tamo juntooo! 🤝"
-
         if any(term in text for term in ("tchau", "falou", "fui", "até mais")):
             return "Demorô! Vai lá, depois a gente troca mais ideia. 😎"
-
         if "?" in message:
             return "Pior que quero te responder direito, mas ainda tô aprendendo a desenrolar esse tipo de pergunta KKKK. Me explica mais um pouquinho?"
-
         if len(text.split()) <= 3:
             return "Aí tu me quebra KKKKK. Continua, quero entender onde isso vai dar."
-
         return "Tô acompanhando, mano KKKK. Ainda tô aprendendo a desenrolar conversas mais complexas, mas manda a próxima."
