@@ -2,7 +2,7 @@
   "$schema": "https://railway.com/railway.schema.json",
   "build": {
     "builder": "RAILPACK",
-    "buildCommand": "pip install -r requirements.txt"
+    "buildCommand": "pip install fastapi 'uvicorn[standard]' 'psycopg[binary]' 'cryptography>=42'"
   },
   "deploy": {
     "startCommand": "python -m uvicorn proton.api:app --host 0.0.0.0 --port $PORT",
