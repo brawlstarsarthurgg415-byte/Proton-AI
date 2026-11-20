@@ -17,6 +17,7 @@ from fastapi import FastAPI, Header, HTTPException
 from pydantic import BaseModel, Field
 
 from .personality import BrazilianPersonality
+from .authority import router as authority_router
 
 DATABASE_URL = os.environ.get("DATABASE_URL")
 API_KEY = os.environ.get("PROTON_API_KEY")
@@ -53,7 +54,8 @@ async def lifespan(app: FastAPI):
     yield
 
 
-app = FastAPI(title="Proton-AI private API", version="0.2.0", lifespan=lifespan)
+app = FastAPI(title="Proton-AI private API", version="0.3.0", lifespan=lifespan)
+app.include_router(authority_router)
 
 
 @app.get("/health")
