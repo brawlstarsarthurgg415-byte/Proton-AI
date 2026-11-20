@@ -1,4 +1,4 @@
-"""Private Railway API for Proton-AI knowledge intake.
+"""Private Railway API for Proton-AI knowledge intake and chat.
 
 Keep this service private on Railway. Do not attach a public domain until
 authentication and rate limiting have been configured.
@@ -9,15 +9,18 @@ import hashlib
 import os
 from contextlib import asynccontextmanager
 from typing import Any
-from uuid import UUID
+from uuid import UUID, uuid4
 
 import psycopg
 from psycopg.types.json import Jsonb
 from fastapi import FastAPI, Header, HTTPException
 from pydantic import BaseModel, Field
 
+from .personality import BrazilianPersonality
+
 DATABASE_URL = os.environ.get("DATABASE_URL")
 API_KEY = os.environ.get("PROTON_API_KEY")
+chat_sessions: dict[str, BrazilianPersonality] = {}
 
 
 def db():
@@ -40,12 +43,17 @@ class KnowledgeInput(BaseModel):
     sources: list[str] = Field(default_factory=list, max_length=10)
 
 
+class ChatInput(BaseModel):
+    message: str = Field(min_length=1, max_length=4000)
+    session_id: str | None = Field(default=None, min_length=1, max_length=100)
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     yield
 
 
-app = FastAPI(title="Proton-AI private API", version="0.1.0", lifespan=lifespan)
+app = FastAPI(title="Proton-AI private API", version="0.2.0", lifespan=lifespan)
 
 
 @app.get("/health")
@@ -56,6 +64,20 @@ def health() -> dict[str, str]:
         return {"status": "ok", "database": "connected"}
     except Exception:
         raise HTTPException(status_code=503, detail="Database unavailable")
+
+
+@app.post("/chat")
+def chat(payload: ChatInput, authorization: str | None = Header(default=None)):
+    """Authenticated informal Brazilian chat; session state is kept in process memory."""
+    require_key(authorization)
+    session_id = payload.session_id or str(uuid4())
+    personality = chat_sessions.get(session_id)
+    if personality is None:
+        if len(chat_sessions) >= 1000:
+            chat_sessions.pop(next(iter(chat_sessions)))
+        personality = BrazilianPersonality()
+        chat_sessions[session_id] = personality
+    return {"session_id": session_id, "reply": personality.reply(payload.message)}
 
 
 @app.post("/knowledge", status_code=201)
