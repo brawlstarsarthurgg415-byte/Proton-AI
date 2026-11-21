@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import os
 import sys
+from pathlib import Path
 
 from .agent_tools import Workspace
 from .core import Proton
@@ -32,10 +33,17 @@ def confirm(question: str) -> bool:
 
 def header(workspace: Workspace) -> None:
     width = 58
+    local_checkpoint = Path(__file__).resolve().parent.parent / "checkpoints" / "proton-evolved.pt"
+    if os.getenv("PROTON_LLM_API_KEY") or os.getenv("OPENAI_API_KEY"):
+        model_label = "provedor externo configurado"
+    elif local_checkpoint.is_file():
+        model_label = "núcleo neural local experimental"
+    else:
+        model_label = "núcleo local ainda não treinado"
     print(paint("╭" + "─" * width + "╮", BLUE))
     print(paint("│", BLUE) + paint("  ◈ PROTON", BOLD + CYAN) + paint("  /  AGENT TERMINAL", DIM) + " " * 22 + paint("│", BLUE))
     print(paint("│", BLUE) + f"  workspace  {workspace.root}"[:width].ljust(width) + paint("│", BLUE))
-    print(paint("│", BLUE) + f"  model      {'API conectada' if (os.getenv('PROTON_LLM_API_KEY') or os.getenv('OPENAI_API_KEY')) else 'modo básico / sem provedor'}".ljust(width) + paint("│", BLUE))
+    print(paint("│", BLUE) + f"  model      {model_label}".ljust(width) + paint("│", BLUE))
     print(paint("╰" + "─" * width + "╯", BLUE))
     print(paint("  Digite /help para comandos. Ações de escrita e terminal pedem confirmação.\n", DIM))
 
@@ -137,7 +145,9 @@ def main() -> None:
             if command == "/status":
                 configured = bool(os.getenv("PROTON_LLM_API_KEY") or os.getenv("OPENAI_API_KEY"))
                 print(f"Workspace : {workspace.root}")
-                print(f"Provedor  : {'configurado' if configured else 'não configurado (fallback local)'}")
+                local_checkpoint = Path(__file__).resolve().parent.parent / "checkpoints" / "proton-evolved.pt"
+                print(f"Provedor  : {'configurado' if configured else 'não configurado'}")
+                print(f"Modelo local: {'checkpoint encontrado' if local_checkpoint.is_file() else 'ainda não treinado'}")
                 print(f"Memória   : {len(proton.memory.all())} anotações")
                 print(f"Contexto  : {len(history)} mensagens nesta sessão")
                 print("Ferramentas: arquivos, busca e comandos permitidos")
