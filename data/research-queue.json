@@ -1,0 +1,74 @@
+[
+  {
+    "topic": "fundamentos de programação",
+    "status": "pending",
+    "priority": 50,
+    "reason": "currículo inicial"
+  },
+  {
+    "topic": "matemática básica",
+    "status": "pending",
+    "priority": 50,
+    "reason": "currículo inicial"
+  },
+  {
+    "topic": "método científico",
+    "status": "pending",
+    "priority": 50,
+    "reason": "currículo inicial"
+  },
+  {
+    "topic": "física clássica",
+    "status": "pending",
+    "priority": 50,
+    "reason": "currículo inicial"
+  },
+  {
+    "topic": "biologia celular",
+    "status": "pending",
+    "priority": 50,
+    "reason": "currículo inicial"
+  },
+  {
+    "topic": "história do Brasil",
+    "status": "pending",
+    "priority": 50,
+    "reason": "currículo inicial"
+  },
+  {
+    "topic": "geografia física",
+    "status": "pending",
+    "priority": 50,
+    "reason": "currículo inicial"
+  },
+  {
+    "topic": "astronomia",
+    "status": "pending",
+    "priority": 50,
+    "reason": "currículo inicial"
+  },
+  {
+    "topic": "redes de computadores",
+    "status": "pending",
+    "priority": 50,
+    "reason": "currículo inicial"
+  },
+  {
+    "topic": "segurança digital",
+    "status": "pending",
+    "priority": 50,
+    "reason": "currículo inicial"
+  },
+  {
+    "topic": "língua portuguesa",
+    "status": "pending",
+    "priority": 50,
+    "reason": "currículo inicial"
+  },
+  {
+    "topic": "pensamento crítico",
+    "status": "pending",
+    "priority": 50,
+    "reason": "currículo inicial"
+  }
+]
