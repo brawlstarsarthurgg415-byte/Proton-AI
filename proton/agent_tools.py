@@ -13,6 +13,9 @@ from pathlib import Path
 
 IGNORED_DIRS = {".git", ".venv", "venv", "__pycache__", "node_modules", "target", ".proton-backups"}
 MAX_READ_BYTES = 160_000
+SENSITIVE_NAMES = {".env", ".env.local", ".env.production", "credentials.json", "secrets.json", "id_rsa", "id_ed25519"}
+SENSITIVE_SUFFIXES = {".pem", ".key", ".p12", ".pfx", ".jks", ".keystore"}
+BLOCKED_DIRS = {".git", ".ssh", ".aws"}
 SAFE_COMMANDS = {
     "pwd", "git", "python", "python3", "cargo", "npm",
 }
@@ -29,6 +32,11 @@ class Workspace:
             candidate.relative_to(self.root)
         except ValueError as exc:
             raise ValueError("Por segurança, só posso acessar arquivos dentro da pasta do projeto.") from exc
+        parts = [part.casefold() for part in candidate.relative_to(self.root).parts]
+        if any(part in SENSITIVE_NAMES or Path(part).suffix in SENSITIVE_SUFFIXES for part in parts):
+            raise ValueError("Acesso bloqueado: esse caminho parece conter credenciais ou material privado.")
+        if any(part in BLOCKED_DIRS for part in parts):
+            raise ValueError("Acesso bloqueado a diretórios privados ou metadados internos.")
         return candidate
 
     def list_files(self, value: str = ".", limit: int = 80) -> list[str]:
@@ -37,7 +45,9 @@ class Workspace:
             raise ValueError("Esse caminho não é uma pasta.")
         results = []
         for path in sorted(folder.iterdir(), key=lambda p: (not p.is_dir(), p.name.casefold())):
-            if path.name in IGNORED_DIRS or path.name.startswith(".proton-backup"):
+            if path.name in IGNORED_DIRS or path.name in BLOCKED_DIRS or path.name.startswith(".proton-backup"):
+                continue
+            if path.name.casefold() in SENSITIVE_NAMES or path.suffix.casefold() in SENSITIVE_SUFFIXES:
                 continue
             suffix = "/" if path.is_dir() else ""
             results.append(path.name + suffix)
@@ -64,8 +74,10 @@ class Workspace:
             raise ValueError("A pasta de busca não existe.")
         hits: list[str] = []
         for base, dirs, files in os.walk(folder):
-            dirs[:] = [d for d in dirs if d not in IGNORED_DIRS and not d.startswith(".proton-backup")]
+            dirs[:] = [d for d in dirs if d not in IGNORED_DIRS and d not in BLOCKED_DIRS and not d.startswith(".proton-backup")]
             for name in files:
+                if name.casefold() in SENSITIVE_NAMES or Path(name).suffix.casefold() in SENSITIVE_SUFFIXES:
+                    continue
                 path = Path(base) / name
                 try:
                     resolved = path.resolve()
