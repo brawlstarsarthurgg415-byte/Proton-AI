@@ -287,3 +287,25 @@ O treinador atual modifica pesos PyTorch de um pequeno Transformer de caracteres
 ## 🛡️ Proton Authority
 
 A primeira etapa do sistema de cargos, autenticação global, Authenticator (TOTP), sessões e configurações pessoais está documentada em [docs/AUTHORITY.md](docs/AUTHORITY.md). Ela fornece rotas de API; o painel visual, presença online, mensagens globais, recuperação de conta e integração completa com a memória/chat ainda estão em desenvolvimento.
+
+
+## 🧬 Neuroevolução local (experimental)
+
+O Proton agora inclui uma primeira experiência de neuroevolução Lamarckiana:
+
+- cria uma população de pequenos Transformers com pesos iniciais aleatórios;
+- treina cada indivíduo por alguns passos no corpus local;
+- classifica os indivíduos por perda em dados de validação separados;
+- mantém os melhores e cria descendentes copiando pesos com mutações gaussianas;
+- aumenta progressivamente o contexto de 16 para até 64 caracteres;
+- salva o melhor checkpoint em `checkpoints/proton-evolved.pt`.
+
+No computador com PyTorch instalado, execute:
+
+```bash
+python -m proton.evolve --minutes 5
+```
+
+Também existe o workflow **Proton five-minute neuroevolution** em GitHub Actions, que executa cinco minutos em CPU e publica o checkpoint como artefato. No terminal interativo, `/evolve` inicia o treino local de cinco minutos.
+
+**Limitação importante:** o modelo atual é um Transformer de caracteres pequeno, treinado num corpus de demonstração curto. A seleção otimiza previsão de caracteres em validação; isso não equivale a compreensão, raciocínio ou conversa natural. O checkpoint é experimental e ainda não pode ser chamado de IA de ponta. Para conversação de boa qualidade, serão necessários tokenizer subword, corpus muito maior e licenciado, ajuste supervisionado de diálogos, avaliações independentes e hardware adequado. A disponibilidade de PyTorch no Android/Termux também pode impedir o treino e a inferência local.
