@@ -17,7 +17,7 @@ voice = ["cryptography>=42"]
 proton = "proton.cli:main"
 proton-chat = "proton.cli:main"
 proton-train = "proton.train:main"
-proton-collective = "proton.collective_cli:main"
+proton-collective = "proton.collective_cli:main"\nproton-research = "proton.research:main"
 
 [tool.setuptools.packages.find]
 include = ["proton*"]
