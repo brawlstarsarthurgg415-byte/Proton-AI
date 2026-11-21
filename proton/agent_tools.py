@@ -142,9 +142,15 @@ class Workspace:
         if executable == "python" or executable == "python3":
             if len(argv) < 3 or argv[1] != "-m" or argv[2] not in {"pytest", "unittest"}:
                 raise ValueError("Python só permite os módulos pytest e unittest nesta versão.")
-        completed = subprocess.run(
-            argv, cwd=self.root, text=True, stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT, timeout=timeout, check=False,
-        )
+        try:
+            completed = subprocess.run(
+                argv, cwd=self.root, text=True, stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT, timeout=timeout, check=False,
+            )
+        except subprocess.TimeoutExpired as exc:
+            output = exc.stdout or ""
+            if isinstance(output, bytes):
+                output = output.decode("utf-8", errors="replace")
+            return 124, "Tempo limite de 60 segundos atingido.\n" + output[-20_000:]
         output = completed.stdout[-20_000:] if completed.stdout else "(sem saída)"
         return completed.returncode, output
