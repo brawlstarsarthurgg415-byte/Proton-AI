@@ -2,9 +2,7 @@
 from __future__ import annotations
 
 import os
-import shutil
 import sys
-from pathlib import Path
 
 from .agent_tools import Workspace
 from .core import Proton
@@ -131,9 +129,12 @@ def main() -> None:
                 if not argument:
                     print("Uso: /find texto")
                 else:
-                    for hit in workspace.search(argument):
-                        print(hit)
-                    print(paint("Nenhuma ocorrência encontrada." if not workspace.search(argument) else "", DIM), end="")
+                    hits = workspace.search(argument)
+                    if not hits:
+                        print(paint("Nenhuma ocorrência encontrada.", DIM))
+                    else:
+                        for hit in hits:
+                            print(hit)
                 continue
             if command == "/write":
                 if not argument:
