@@ -25,26 +25,32 @@ def main() -> None:
         try:
             command = input("\nVocê > ").strip()
         except (EOFError, KeyboardInterrupt):
-            print("\nProton: Falou! Até a próxima KKKK.")
+            print("\nProton: Falou! Até a próxima.")
+            break
+
+        if not command:
+            continue
+        if command in {"/quit", "/exit"}:
+            print("Proton: Até mais!")
             break
         if command == "/p-admin":
             from .voice_admin import main as voice_admin_main
             voice_admin_main()
-        elif command == "/quit":
-            print("Proton: Demorô, fui nessa! 😎")
-            break
+            continue
         if command == "/help":
             print(HELP)
-        elif command.startswith("/learn "):
+            continue
+        if command.startswith("/learn "):
             item, reports = learning.submit(command[7:], source="user")
             for report in reports:
                 status = "OK" if report.passed else "ATENÇÃO"
                 print(f"  [{status}] Professor {report.name}: {report.message}")
             if item:
-                print(f"Proton: Boa! Anotação {item['id']} salva depois das verificações locais.")
+                print(f"Proton: Anotação {item['id']} salva após as verificações locais.")
             else:
-                print("Proton: Não salvei essa, confere os avisos ali em cima.")
-        elif command.startswith("/ask "):
+                print("Proton: Não salvei essa; confira os avisos acima.")
+            continue
+        if command.startswith("/ask "):
             results = proton.ask(command[5:])
             if not results:
                 print("Proton: Ainda não achei isso na minha memória. Se quiser, me ensina com /learn.")
@@ -52,26 +58,24 @@ def main() -> None:
                 print("Proton: Ó, achei isso aqui:")
                 for item in results:
                     print(f"  • {item['text']} (fonte: {item['source']})")
-        elif command == "/list":
+            continue
+        if command == "/list":
             items = proton.memory.all()
             if not items:
-                print("Proton: Minha memória tá vazia ainda KKKK.")
+                print("Proton: Minha memória está vazia ainda.")
             for item in items:
                 print(f"  {item['id']}. {item['text']}")
-        elif command:
-            # Use the same generative adapter as the hosted API when a provider
-            # key is configured. Keep the rule-based engine as an honest fallback.
-            answer = generate_chat_reply(history, command)
-            if answer:
-                history.extend([
-                    {"role": "user", "content": command},
-                    {"role": "assistant", "content": answer},
-                ])
-                del history[:-24]
-                print(f"Proton: {answer}")
-            else:
-                print(f"Proton [modo básico]: {proton.chat(command)}")
+            continue
 
-
-if __name__ == "__main__":
-    main()
+        # The terminal and hosted API now share the same generative adapter.
+        # Without a configured provider key, clearly label the rule-based fallback.
+        answer = generate_chat_reply(history, command)
+        if answer:
+            history.extend([
+                {"role": "user", "content": command},
+                {"role": "assistant", "content": answer},
+            ])
+            del history[:-24]
+            print(f"Proton: {answer}")
+        else:
+            print(f"Proton [modo básico]: {proton.chat(command)}")
