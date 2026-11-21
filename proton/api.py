@@ -1,8 +1,4 @@
-"""Private Railway API for Proton-AI knowledge intake and chat.
-
-Keep this service private on Railway. Do not attach a public domain until
-authentication and rate limiting have been configured.
-"""
+"""Proton-AI API: conversational chat and reviewed knowledge intake."""
 from __future__ import annotations
 
 import hashlib
@@ -18,25 +14,18 @@ from fastapi.responses import FileResponse
 from pathlib import Path
 from pydantic import BaseModel, Field
 
+from .llm import generate_chat_reply
 from .personality import BrazilianPersonality
-from .authority import router as authority_router, _current_user
 
 DATABASE_URL = os.environ.get("DATABASE_URL")
-API_KEY = os.environ.get("PROTON_API_KEY")
 chat_sessions: dict[str, BrazilianPersonality] = {}
+conversation_histories: dict[str, list[dict[str, str]]] = {}
 
 
 def db():
     if not DATABASE_URL:
         raise RuntimeError("DATABASE_URL is not configured")
     return psycopg.connect(DATABASE_URL, connect_timeout=10)
-
-
-def require_key(authorization: str | None) -> None:
-    if not API_KEY:
-        raise HTTPException(status_code=503, detail="API is not configured")
-    if authorization != f"Bearer {API_KEY}":
-        raise HTTPException(status_code=401, detail="Unauthorized")
 
 
 class KnowledgeInput(BaseModel):
@@ -56,37 +45,55 @@ async def lifespan(app: FastAPI):
     yield
 
 
-app = FastAPI(title="Proton-AI private API", version="0.3.0", lifespan=lifespan)
-app.include_router(authority_router)
+app = FastAPI(title="Proton-AI conversational API", version="0.4.0", lifespan=lifespan)
+
+
+def answer_message(session_id: str, message: str) -> tuple[str, str]:
+    history = conversation_histories.setdefault(session_id, [])
+    answer = generate_chat_reply(history, message)
+    if answer:
+        history.extend([
+            {"role": "user", "content": message},
+            {"role": "assistant", "content": answer},
+        ])
+        del history[:-24]
+        return answer, "generative"
+
+    # Honest fallback while a model provider is not configured.
+    personality = chat_sessions.setdefault(session_id, BrazilianPersonality())
+    return personality.reply(message), "basic"
 
 
 @app.get("/health")
 def health() -> dict[str, str]:
-    try:
-        with db() as conn:
-            conn.execute("SELECT 1")
-        return {"status": "ok", "database": "connected"}
-    except Exception:
-        raise HTTPException(status_code=503, detail="Database unavailable")
+    return {
+        "status": "ok",
+        "chat_engine": "generative" if os.environ.get("PROTON_LLM_API_KEY") else "basic",
+    }
 
 
 @app.post("/chat")
-def chat(payload: ChatInput, authorization: str | None = Header(default=None)):
-    """Authenticated informal Brazilian chat; session state is kept in process memory."""
-    require_key(authorization)
+def chat(payload: ChatInput):
+    """Public conversational endpoint for the simple Proton chat page."""
     session_id = payload.session_id or str(uuid4())
-    personality = chat_sessions.get(session_id)
-    if personality is None:
-        if len(chat_sessions) >= 1000:
-            chat_sessions.pop(next(iter(chat_sessions)))
-        personality = BrazilianPersonality()
-        chat_sessions[session_id] = personality
-    return {"session_id": session_id, "reply": personality.reply(payload.message)}
+    if len(conversation_histories) + len(chat_sessions) > 2000:
+        conversation_histories.clear()
+        chat_sessions.clear()
+    reply, engine = answer_message(session_id, payload.message)
+    return {"session_id": session_id, "reply": reply, "engine": engine}
+
+
+@app.post("/app/chat")
+def app_chat(payload: ChatInput):
+    """Compatibility alias for older clients; no CEO panel is required."""
+    return chat(payload)
 
 
 @app.post("/knowledge", status_code=201)
 def submit_knowledge(payload: KnowledgeInput, authorization: str | None = Header(default=None)):
-    require_key(authorization)
+    expected = os.environ.get("PROTON_API_KEY")
+    if not expected or authorization != f"Bearer {expected}":
+        raise HTTPException(status_code=401, detail="Unauthorized")
     if payload.kind in {"lesson", "correction", "reference"} and not payload.sources:
         raise HTTPException(status_code=422, detail="At least one source URL is required")
     if any(not url.startswith(("https://", "http://")) for url in payload.sources):
@@ -124,7 +131,9 @@ def submit_knowledge(payload: KnowledgeInput, authorization: str | None = Header
 @app.get("/knowledge")
 def list_knowledge(status: str = "pending_review", limit: int = 50,
                    authorization: str | None = Header(default=None)):
-    require_key(authorization)
+    expected = os.environ.get("PROTON_API_KEY")
+    if not expected or authorization != f"Bearer {expected}":
+        raise HTTPException(status_code=401, detail="Unauthorized")
     if status not in {"pending_review", "quarantined", "approved", "rejected", "declaration_unverified", "all"}:
         raise HTTPException(status_code=400, detail="Invalid status")
     limit = max(1, min(limit, 100))
@@ -145,7 +154,9 @@ def list_knowledge(status: str = "pending_review", limit: int = 50,
 
 @app.get("/knowledge/{item_id}")
 def get_knowledge(item_id: UUID, authorization: str | None = Header(default=None)):
-    require_key(authorization)
+    expected = os.environ.get("PROTON_API_KEY")
+    if not expected or authorization != f"Bearer {expected}":
+        raise HTTPException(status_code=401, detail="Unauthorized")
     with db() as conn:
         row = conn.execute(
             "SELECT id, content, kind, source_label, status, guardian_verdict, training_eligible, created_at FROM knowledge WHERE id=%s",
@@ -162,26 +173,10 @@ def get_knowledge(item_id: UUID, authorization: str | None = Header(default=None
             "created_at": row[7].isoformat(), "sources": [{"url": s[0], "title": s[1]} for s in sources]}
 
 
-
 @app.get("/", include_in_schema=False)
 def proton_home():
-    """Serve the mobile-friendly Proton-AI web interface."""
+    """Serve the standalone Proton-AI chat interface."""
     page = Path(__file__).resolve().parent.parent / "ui" / "index.html"
     if not page.is_file():
         raise HTTPException(status_code=404, detail="Proton-AI interface not installed")
     return FileResponse(page)
-
-
-@app.post("/app/chat")
-def app_chat(payload: ChatInput, authorization: str | None = Header(default=None)):
-    """Chat endpoint for signed-in panel users; never exposes the server API key."""
-    user = _current_user(authorization)
-    session_id = payload.session_id or str(uuid4())
-    scoped_id = f"{user[0]}:{session_id}"
-    personality = chat_sessions.get(scoped_id)
-    if personality is None:
-        if len(chat_sessions) >= 1000:
-            chat_sessions.pop(next(iter(chat_sessions)))
-        personality = BrazilianPersonality()
-        chat_sessions[scoped_id] = personality
-    return {"session_id": session_id, "reply": personality.reply(payload.message)}
