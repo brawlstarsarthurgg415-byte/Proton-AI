@@ -1,0 +1,34 @@
+name: Proton autonomous research
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "23 4 * * *"
+
+permissions:
+  contents: write
+
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Research pending topics on Portuguese Wikipedia
+        run: python -m proton.research run --max-topics 3 --pages 3
+      - name: Commit source-attributed research notes
+        run: |
+          if git diff --quiet -- data/research-queue.json data/research-library.jsonl; then
+            echo "Nenhuma informação nova nesta execução."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/research-queue.json data/research-library.jsonl
+          git commit -m "Add source-attributed Proton research notes"
+          git push
