@@ -157,7 +157,22 @@ fn repl() -> io::Result<()> {
 }
 fn main() -> io::Result<()> {
     let args:Vec<String>=env::args().skip(1).collect();
-    if args.is_empty() { return repl(); }
+    if args.is_empty() {
+        // The Rust launcher previously ran a separate rule-only chat loop.
+        // Delegate interactive chat to the Python CLI so it can use proton.llm.
+        let repo_root = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+            .parent().unwrap_or_else(|| std::path::Path::new(".")).to_path_buf();
+        match Command::new("python3")
+            .current_dir(&repo_root)
+            .args(["-m", "proton.cli"])
+            .status()
+        {
+            Ok(status) if status.success() => return Ok(()),
+            Ok(status) => eprintln!("Aviso: o chat Python terminou com codigo {}. Abrindo modo Rust basico.", status),
+            Err(error) => eprintln!("Aviso: nao consegui iniciar o chat Python ({error}). Abrindo modo Rust basico."),
+        }
+        return repl();
+    }
     let cmd=args.first().map(String::as_str).unwrap_or("help");
     match cmd {
         "help"|"--help"|"-h"=>help(),
