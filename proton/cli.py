@@ -55,7 +55,7 @@ HELP = """PROTON AGENT — COMANDOS
   /write <arquivo>      cria/substitui arquivo após confirmação
   /run <comando>        executa um comando permitido após confirmação
   /diff                 mostra git diff
-  /ask <pergunta>       pesquisa na memória local
+  /ask <pergunta>       pesquisa na memória e na biblioteca de fontes
   /learn <texto>        salva uma anotação na memória
   /list                 lista conhecimentos salvos
   /evolve               treina a IA local por 5 minutos
@@ -243,11 +243,17 @@ def main() -> None:
                     print("A anotação não passou pelas verificações locais.")
                 continue
             if command == "/ask":
-                results = proton.ask(argument)
-                if not results:
-                    print("Ainda não encontrei isso na memória. Experimente /learn para guardar uma anotação.")
-                for item in results:
-                    print(f"• {item['text']}  ({item['source']})")
+                if not argument:
+                    print("Uso: /ask sua pergunta")
+                    continue
+                memory_results = proton.ask(argument)
+                for item in memory_results:
+                    print(f"• Memória: {item['text']}  ({item['source']})")
+                from .research_search import format_research_results, search_research_library
+                research_results = search_research_library(argument)
+                print(format_research_results(research_results))
+                if not memory_results and not research_results:
+                    print('Ainda não encontrei isso. Adicione o tema com: python -m proton.research add "seu tema"')
                 continue
             if command == "/list":
                 items = proton.memory.all()
@@ -276,8 +282,18 @@ def main() -> None:
                 ])
                 del history[:-40]
             else:
-                print(paint("O núcleo conversacional local ainda não está disponível. ", YELLOW) +
-                      "Treine o modelo com /evolve. Nenhuma API externa será chamada.")
+                # Retrieval is useful even when the optional neural runtime is absent.
+                try:
+                    from .research_search import format_research_results, search_research_library
+                    research_results = search_research_library(prompt)
+                except (ImportError, OSError, ValueError):
+                    research_results = []
+                if research_results:
+                    print(paint("◆ Biblioteca de pesquisa local (não é geração neural):", BLUE))
+                    print(format_research_results(research_results))
+                else:
+                    print(paint("O núcleo conversacional local ainda não está disponível. ", YELLOW) +
+                          "Não encontrei uma referência relevante na biblioteca. Nenhuma API externa será chamada.")
         except (ValueError, OSError, TimeoutError) as exc:
             print(paint(f"Erro: {exc}", RED))
 
