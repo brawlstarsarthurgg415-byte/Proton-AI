@@ -1,6 +1,7 @@
 """Interactive terminal for Proton."""
 from .core import Proton
 from .learning import LearningPipeline
+from .llm import generate_chat_reply
 
 HELP = """Comandos do Proton:
   /learn texto   envia uma anotação para revisão local e memória
@@ -17,6 +18,7 @@ A personalidade atual usa regras e contexto curto da sessão; ainda não é um L
 def main() -> None:
     proton = Proton()
     learning = LearningPipeline(proton.memory)
+    history: list[dict[str, str]] = []
     print("Proton-AI — bora trocar uma ideia? 😎")
     print("Manda uma mensagem ou digite /help pra ver os comandos.")
     while True:
@@ -57,7 +59,18 @@ def main() -> None:
             for item in items:
                 print(f"  {item['id']}. {item['text']}")
         elif command:
-            print(f"Proton: {proton.chat(command)}")
+            # Use the same generative adapter as the hosted API when a provider
+            # key is configured. Keep the rule-based engine as an honest fallback.
+            answer = generate_chat_reply(history, command)
+            if answer:
+                history.extend([
+                    {"role": "user", "content": command},
+                    {"role": "assistant", "content": answer},
+                ])
+                del history[:-24]
+                print(f"Proton: {answer}")
+            else:
+                print(f"Proton [modo básico]: {proton.chat(command)}")
 
 
 if __name__ == "__main__":
