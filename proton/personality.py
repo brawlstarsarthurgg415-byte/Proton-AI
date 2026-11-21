@@ -7,6 +7,8 @@ from __future__ import annotations
 
 import re
 
+from .language_ptbr import normalize_ptbr
+
 
 class BrazilianPersonality:
     def __init__(self) -> None:
