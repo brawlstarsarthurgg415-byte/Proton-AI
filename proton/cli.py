@@ -140,10 +140,9 @@ def main() -> None:
                 header(workspace)
                 continue
             if command == "/status":
-                configured = bool(os.getenv("PROTON_LLM_API_KEY") or os.getenv("OPENAI_API_KEY"))
                 print(f"Workspace : {workspace.root}")
                 local_checkpoint = Path(__file__).resolve().parent.parent / "checkpoints" / "proton-evolved.pt"
-                print(f"Provedor  : {'configurado' if configured else 'não configurado'}")
+                print("IA externa: desativada")
                 print(f"Modelo local: {'checkpoint encontrado' if local_checkpoint.is_file() else 'ainda não treinado'}")
                 print(f"Memória   : {len(proton.memory.all())} anotações")
                 print(f"Contexto  : {len(history)} mensagens nesta sessão")
