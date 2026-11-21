@@ -40,7 +40,7 @@
 | Professores auxiliares especializados | 🟡 Primeiros revisores por regras; ainda não são LLMs |
 | Treinamento longo e retomada robusta de checkpoints | 🟡 Em desenvolvimento |
 | Conjunto de dados amplo, validado e com fontes | 🔴 Ainda necessário |
-| Pesquisa online com fontes verificáveis | 🟡 Planejado |
+| Pesquisa automática na Wikipedia com fontes e deduplicação | 🟢 Primeira etapa implementada |\n| Pesquisa em documentação técnica e PDFs externos | 🟡 Próxima etapa |
 | Atualizações automáticas verificadas, backup e reversão | 🟡 Planejado |
 | Interface gráfica completa conectada ao núcleo neural | 🟡 Planejada |
 
@@ -268,7 +268,26 @@ Este projeto usa a licença MIT. Consulte o arquivo [LICENSE](LICENSE).
 <p align="center"><strong>Proton-AI — aprendendo, construindo e evoluindo passo a passo.</strong><br><sub>Projeto experimental: recursos planejados não são recursos já implementados.</sub></p>
 
 
-## 🛡️ IA Guardiã local\n\nO módulo opcional `Qwen3Guard-Gen-0.6B` faz uma triagem de segurança das propostas coletivas sem chamar uma API externa. Instale com `pip install -e '.[guardian]'` e execute `proton-collective guard --limit 20`. A classificação é apenas auxiliar: nem mesmo um resultado `Safe` aprova uma proposta ou a libera para treinamento. Veja [docs/GUARDIAN.md](docs/GUARDIAN.md). O comando é manual nesta etapa; serviço 24/7 ainda não foi implantado.\n\n## 🌐 Rede coletiva de ensinamentos
+## 🛡️ IA Guardiã local\n\nO módulo opcional `Qwen3Guard-Gen-0.6B` faz uma triagem de segurança das propostas coletivas sem chamar uma API externa. Instale com `pip install -e '.[guardian]'` e execute `proton-collective guard --limit 20`. A classificação é apenas auxiliar: nem mesmo um resultado `Safe` aprova uma proposta ou a libera para treinamento. Veja [docs/GUARDIAN.md](docs/GUARDIAN.md). O comando é manual nesta etapa; serviço 24/7 ainda não foi implantado.\n\n## 🌐 Pesquisa autônoma e descoberta de lacunas
+
+A primeira etapa do pesquisador autônomo já está disponível em `proton/research.py`. Ela mantém uma fila de assuntos, consulta a API oficial da Wikipedia em português, salva resumos com URL, título, revisão, data de coleta e hash, e evita baixar novamente a mesma revisão.
+
+Instale o projeto e use:
+
+```bash
+proton-research status
+proton-research add "álgebra linear"
+proton-research gap "frações" --score 0.35
+proton-research run --max-topics 3 --pages 3
+```
+
+Uma nota abaixo de 80% pode registrar uma lacuna e aumentar a prioridade daquele tema. O comando `gap` é a ponte inicial para avaliações futuras; a detecção automática de erros nas conversas ainda precisa ser integrada ao avaliador do modelo.
+
+O workflow **Proton autonomous research** também roda diariamente no GitHub Actions e pesquisa até três assuntos pendentes por execução. Os registros são salvos em `data/research-library.jsonl`, com atribuição à Wikipedia e status `unverified_reference`.
+
+**Limites importantes:** esta primeira etapa consulta somente a Wikipedia em português; não lê automaticamente todos os sites, livros ou PDFs. O conteúdo baixado é material de referência não verificado: não é tratado como verdade garantida, não executa instruções encontradas nos textos e não entra automaticamente no treinamento neural. Antes de treinar com uma fonte, é necessário verificar a informação, a licença e a qualidade, e manter exemplos de avaliação separados. Não existe uma forma realista de garantir que uma IA saiba literalmente tudo; o objetivo é ampliar o conhecimento de forma incremental, rastreável e corrigível.
+
+## 🌐 Rede coletiva de ensinamentos
 
 O módulo experimental `proton-collective` permite preparar contribuições locais, publicar propostas no GitHub, baixar um feed público aprovado e exportar lições selecionadas para o próximo treinamento neural.
 
