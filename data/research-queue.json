@@ -1,21 +1,27 @@
 [
   {
     "topic": "fundamentos de programação",
-    "status": "pending",
+    "status": "researched",
     "priority": 50,
-    "reason": "currículo inicial"
+    "reason": "currículo inicial",
+    "last_checked_at": "2026-11-21T05:53:29.998717+00:00",
+    "pages_found": 3
   },
   {
     "topic": "matemática básica",
-    "status": "pending",
+    "status": "researched",
     "priority": 50,
-    "reason": "currículo inicial"
+    "reason": "currículo inicial",
+    "last_checked_at": "2026-11-21T05:53:31.376404+00:00",
+    "pages_found": 3
   },
   {
     "topic": "método científico",
-    "status": "pending",
+    "status": "researched",
     "priority": 50,
-    "reason": "currículo inicial"
+    "reason": "currículo inicial",
+    "last_checked_at": "2026-11-21T05:53:32.810567+00:00",
+    "pages_found": 3
   },
   {
     "topic": "física clássica",
