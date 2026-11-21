@@ -262,12 +262,13 @@ def export_training_text(output: Path, *, approved_path: Path = APPROVED) -> int
 
 
 def record_external_review(record_id: str, reviewer_id: str, decision: str,
-                           rationale: str, *, outbox: Path = OUTBOX) -> dict[str, Any]:
+                           rationale: str, *, outbox: Path | None = None) -> dict[str, Any]:
     """Attach an independently supplied review. Caller must authenticate reviewer identity."""
     if decision not in {"approve", "reject", "needs_changes"}:
         raise CollectiveError("decision must be approve, reject or needs_changes")
     if not reviewer_id.strip() or len(rationale.strip()) < 20:
         raise CollectiveError("Reviewer ID and a rationale of at least 20 characters are required.")
+    outbox = OUTBOX if outbox is None else outbox
     path = outbox / f"{record_id}.json"
     if not path.is_file():
         raise CollectiveError("Proposal not found.")
