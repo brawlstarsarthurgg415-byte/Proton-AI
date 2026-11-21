@@ -40,7 +40,8 @@
 | Professores auxiliares especializados | 🟡 Primeiros revisores por regras; ainda não são LLMs |
 | Treinamento longo e retomada robusta de checkpoints | 🟡 Em desenvolvimento |
 | Conjunto de dados amplo, validado e com fontes | 🔴 Ainda necessário |
-| Pesquisa automática na Wikipedia com fontes e deduplicação | 🟢 Primeira etapa implementada |\n| Pesquisa em documentação técnica e PDFs externos | 🟡 Próxima etapa |
+| Pesquisa automática na Wikipedia com fontes e deduplicação | 🟢 Primeira etapa implementada |
+| Pesquisa em documentação técnica e PDFs externos | 🟡 Próxima etapa |
 | Atualizações automáticas verificadas, backup e reversão | 🟡 Planejado |
 | Interface gráfica completa conectada ao núcleo neural | 🟡 Planejada |
 
@@ -268,7 +269,11 @@ Este projeto usa a licença MIT. Consulte o arquivo [LICENSE](LICENSE).
 <p align="center"><strong>Proton-AI — aprendendo, construindo e evoluindo passo a passo.</strong><br><sub>Projeto experimental: recursos planejados não são recursos já implementados.</sub></p>
 
 
-## 🛡️ IA Guardiã local\n\nO módulo opcional `Qwen3Guard-Gen-0.6B` faz uma triagem de segurança das propostas coletivas sem chamar uma API externa. Instale com `pip install -e '.[guardian]'` e execute `proton-collective guard --limit 20`. A classificação é apenas auxiliar: nem mesmo um resultado `Safe` aprova uma proposta ou a libera para treinamento. Veja [docs/GUARDIAN.md](docs/GUARDIAN.md). O comando é manual nesta etapa; serviço 24/7 ainda não foi implantado.\n\n## 🌐 Pesquisa autônoma e descoberta de lacunas
+## 🛡️ IA Guardiã local
+
+O módulo opcional `Qwen3Guard-Gen-0.6B` faz uma triagem de segurança das propostas coletivas sem chamar uma API externa. Instale com `pip install -e '.[guardian]'` e execute `proton-collective guard --limit 20`. A classificação é apenas auxiliar: nem mesmo um resultado `Safe` aprova uma proposta ou a libera para treinamento. Veja [docs/GUARDIAN.md](docs/GUARDIAN.md). O comando é manual nesta etapa; serviço 24/7 ainda não foi implantado.
+
+## 🌐 Pesquisa autônoma e descoberta de lacunas
 
 A primeira etapa do pesquisador autônomo já está disponível em `proton/research.py`. Ela mantém uma fila de assuntos, consulta a API oficial da Wikipedia em português, salva resumos com URL, título, revisão, data de coleta e hash, e evita baixar novamente a mesma revisão.
 
