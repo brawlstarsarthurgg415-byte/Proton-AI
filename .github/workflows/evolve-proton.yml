@@ -1,10 +1,12 @@
-name: Proton five-minute neuroevolution
+name: Proton automatic evolution
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron: "17 3 * * *"
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: proton-neuroevolution
@@ -13,7 +15,7 @@ concurrency:
 jobs:
   evolve:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -28,24 +30,54 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install --index-url https://download.pytorch.org/whl/cpu torch
 
-      - name: Run five-minute neuroevolution
+      - name: Download current champion (if one exists)
+        continue-on-error: true
+        run: |
+          mkdir -p checkpoints
+          curl -fL --retry 2 \
+            https://github.com/${{ github.repository }}/releases/download/proton-model-latest/proton-evolved.pt \
+            -o checkpoints/previous-proton.pt
+
+      - name: Train candidate for five minutes
         run: |
           python -m proton.evolve --minutes 5 --device cpu --population 4 --elites 2
 
-      - name: Upload best evolved model
-        uses: actions/upload-artifact@v4
-        with:
-          name: proton-evolved-model
-          path: checkpoints/proton-evolved.pt
-          if-no-files-found: error
-          retention-days: 30
-
-      - name: Training report
-        if: always()
+      - name: Keep only a candidate with better validation loss
+        id: compare
         run: |
-          echo "## Proton neuroevolution" >> "$GITHUB_STEP_SUMMARY"
-          echo "- Requested runtime: 5 minutes." >> "$GITHUB_STEP_SUMMARY"
-          echo "- Population: 4 small neural networks; 2 elites survive each generation." >> "$GITHUB_STEP_SUMMARY"
-          echo "- Children inherit elite weights and receive controlled mutations." >> "$GITHUB_STEP_SUMMARY"
-          echo "- Validation measures next-character prediction on held-out corpus text; it does not prove conversational understanding." >> "$GITHUB_STEP_SUMMARY"
-          echo "- The resulting checkpoint is an experimental character-level model, not a state-of-the-art assistant." >> "$GITHUB_STEP_SUMMARY"
+          python - <<'PY'
+          import os
+          from pathlib import Path
+          import torch
+
+          candidate = torch.load("checkpoints/proton-evolved.pt", map_location="cpu", weights_only=False)
+          previous_path = Path("checkpoints/previous-proton.pt")
+          improved = True
+          if previous_path.exists():
+              previous = torch.load(previous_path, map_location="cpu", weights_only=False)
+              old_loss = float(previous.get("metrics", {}).get("validation_loss", float("inf")))
+              new_loss = float(candidate.get("metrics", {}).get("validation_loss", float("inf")))
+              improved = new_loss < old_loss
+              print(f"Modelo anterior: {old_loss:.6f}; candidato: {new_loss:.6f}")
+              if not improved:
+                  Path("checkpoints/proton-evolved.pt").write_bytes(previous_path.read_bytes())
+                  print("Candidato descartado: não superou o modelo atual.")
+          else:
+              print("Primeiro modelo: será publicado como versão inicial.")
+          with open(os.environ["GITHUB_OUTPUT"], "a") as output:
+              output.write(f"improved={'true' if improved else 'false'}\n")
+          PY
+
+      - name: Publish champion model
+        if: steps.compare.outputs.improved == 'true'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: proton-model-latest
+          name: Proton model (latest champion)
+          body: |
+            Modelo experimental da Proton, atualizado automaticamente.
+            Só é publicado quando a perda de validação melhora em relação ao campeão anterior.
+            A métrica mede previsão de caracteres no corpus, não inteligência geral.
+          files: checkpoints/proton-evolved.pt
+          overwrite_files: true
+          make_latest: true
