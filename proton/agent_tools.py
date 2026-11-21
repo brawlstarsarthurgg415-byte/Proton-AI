@@ -33,7 +33,7 @@ class Workspace:
         except ValueError as exc:
             raise ValueError("Por segurança, só posso acessar arquivos dentro da pasta do projeto.") from exc
         parts = [part.casefold() for part in candidate.relative_to(self.root).parts]
-        if any(part in SENSITIVE_NAMES or Path(part).suffix in SENSITIVE_SUFFIXES for part in parts):
+        if any(part in SENSITIVE_NAMES or (part.startswith('.env.') and part not in {'.env.example', '.env.sample', '.env.template'}) or Path(part).suffix in SENSITIVE_SUFFIXES for part in parts):
             raise ValueError("Acesso bloqueado: esse caminho parece conter credenciais ou material privado.")
         if any(part in BLOCKED_DIRS for part in parts):
             raise ValueError("Acesso bloqueado a diretórios privados ou metadados internos.")
@@ -47,7 +47,7 @@ class Workspace:
         for path in sorted(folder.iterdir(), key=lambda p: (not p.is_dir(), p.name.casefold())):
             if path.name in IGNORED_DIRS or path.name in BLOCKED_DIRS or path.name.startswith(".proton-backup"):
                 continue
-            if path.name.casefold() in SENSITIVE_NAMES or path.suffix.casefold() in SENSITIVE_SUFFIXES:
+            if path.name.casefold() in SENSITIVE_NAMES or (path.name.casefold().startswith('.env.') and path.name.casefold() not in {'.env.example', '.env.sample', '.env.template'}) or path.suffix.casefold() in SENSITIVE_SUFFIXES:
                 continue
             suffix = "/" if path.is_dir() else ""
             results.append(path.name + suffix)
@@ -76,7 +76,7 @@ class Workspace:
         for base, dirs, files in os.walk(folder):
             dirs[:] = [d for d in dirs if d not in IGNORED_DIRS and d not in BLOCKED_DIRS and not d.startswith(".proton-backup")]
             for name in files:
-                if name.casefold() in SENSITIVE_NAMES or Path(name).suffix.casefold() in SENSITIVE_SUFFIXES:
+                if name.casefold() in SENSITIVE_NAMES or (name.casefold().startswith('.env.') and name.casefold() not in {'.env.example', '.env.sample', '.env.template'}) or Path(name).suffix.casefold() in SENSITIVE_SUFFIXES:
                     continue
                 path = Path(base) / name
                 try:
@@ -127,8 +127,10 @@ class Workspace:
         executable = Path(argv[0]).name
         if executable not in SAFE_COMMANDS:
             raise ValueError(f"Comando não permitido nesta versão: {executable}")
-        if executable == "git" and len(argv) > 1 and argv[1] not in {"status", "diff", "log", "branch"}:
+        if executable == "git" and (len(argv) < 2 or argv[1] not in {"status", "diff", "log", "branch"}):
             raise ValueError("Por enquanto, Git só permite status, diff, log e branch.")
+        if executable == "git" and argv[1] == "branch" and len(argv) > 2 and argv[2] != "--show-current":
+            raise ValueError("Por segurança, git branch só permite listar branches ou usar --show-current.")
         if executable == "cargo" and len(argv) > 1 and argv[1] not in {"test", "check", "build"}:
             raise ValueError("Por enquanto, Cargo só permite test, check e build.")
         if executable in {"python", "python3"} and len(argv) > 1 and argv[1] not in {"-m"}:
