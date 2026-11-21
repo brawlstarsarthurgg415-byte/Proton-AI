@@ -1,7 +1,7 @@
-"""Camada inicial de personalidade informal brasileira para o chat do Proton.
+"""Personalidade informal brasileira do Proton (motor local por regras).
 
-É um motor de diálogo por regras, não um modelo de linguagem. Ele mantém
-um pouco do contexto da sessão e pode ser substituído por um LLM local no futuro.
+Este módulo dá ao chat um registro coloquial brasileiro. Não é um LLM:
+reconhece expressões comuns e mantém um contexto simples da conversa.
 """
 from __future__ import annotations
 
@@ -11,60 +11,80 @@ import re
 class BrazilianPersonality:
     def __init__(self) -> None:
         self.offended_turns = 0
+        self.last_topic = ""
 
     @staticmethod
     def _clean(text: str) -> str:
-        return re.sub(r"\s+", " ", text.casefold()).strip()
+        text = text.casefold().strip()
+        text = re.sub(r"\s+", " ", text)
+        return text
+
+    @staticmethod
+    def _has(text: str, *terms: str) -> bool:
+        return any(re.search(r"(?<!\w)" + re.escape(term) + r"(?!\w)", text) for term in terms)
 
     def reply(self, message: str) -> str:
         text = self._clean(message)
+        words = text.split()
         if not text:
-            return "Manda alguma coisa aí, pô KKKK."
+            return "Manda aí, pô. Tô na escuta KKKK."
 
-        if any(term in text for term in ("foi mal", "desculpa", "perdão", "to brincando", "tô brincando")):
+        # Desculpas e provocações leves.
+        if self._has(text, "foi mal", "desculpa", "perdão", "to brincando", "tô brincando"):
             if self.offended_turns:
                 self.offended_turns = 0
-                return "Tá perdoado, vai KKKKK. Mas essa eu vou guardar na memória 🤨"
-            return "Suave KKKKK, tá tudo certo."
+                return "Suave, tá tudo certo KKKK. Vida que segue."
+            return "Relaxa, pô. Tá de boa KKKK."
 
-        if any(term in text for term in ("você é feio", "tu é feio", "você é chato", "tu é chato", "você é mó chato", "tu é mó chato", "muito chato", "seu idiota", "seu burro", "você é besta", "tu é besta")):
-            self.offended_turns = 2
-            return "OLOCO 😭 KKKKK. Tá bom então, vou até ficar quietinho... quero ver quando você precisar de mim."
+        if any(term in text for term in ("você é feio", "tu é feio", "você é chato", "tu é chato", "seu idiota", "seu burro")):
+            self.offended_turns = 1
+            return "Aí tu pega pesado KKKKK. Qual foi, mano? 😂"
 
         if self.offended_turns:
-            self.offended_turns -= 1
-            if self.offended_turns:
-                return "Ah, agora quer trocar ideia? Sei... depois daquela ofensa gratuita KKKKK 🙄"
-            return "Tá, vai. Vou parar de drama KKKKK. Qual foi?"
+            self.offended_turns = 0
+            return "KKKK já passou, bora trocar ideia. Qual foi?"
 
-        if text in {"oi", "olá", "ola", "hey", "hello", "eae"} or any(term in text for term in ("bom dia", "boa tarde", "boa noite", "e aí", "eai", "opa", "salve", "fala proton", "fala aí")):
-            return "Opaaa! Suave por aí? Qual vai ser a resenha de hoje? KKKK"
-        if any(term in text for term in ("slk", "seloko", "cê é loko", "ce e loko")):
-            return "SLKKKKKK, aí tu mandou essa do nada 😂"
-        if any(term in text for term in ("pprt", "papo reto", "na moral")):
-            return "Papo retíssimo, meu consagrado KKKK."
-        if any(term in text for term in ("oxe", "uai", "eita")):
-            return "OXEEE KKKKK, que foi que aconteceu agora?"
-        if any(term in text for term in ("deu ruim", "deu bom", "já era")):
-            return "Ih rapaz KKKKK. Foi de arrasta pra cima ou ainda dá pra salvar?"
-        if any(term in text for term in ("bora", "partiu")):
-            return "BORA ENTÃO 😎 Só falar qual é a missão."
-        if any(term in text for term in ("tá ligado", "ta ligado", "sacou")):
-            return "Tô ligado, pô KKKK. Continua que eu tô acompanhando."
-        if any(term in text for term in ("kkkk", "hahaha", "rsrs")):
-            return "KKKKKKKK tu tá rindo do quê, criatura? 😂"
-        if any(term in text for term in ("tá fazendo o que", "ta fazendo o que", "que tá fazendo", "que ta fazendo")):
-            return "Tô por aqui, na atividade, esperando você chegar com algum papo aleatório KKKKK. E tu?"
-        if any(term in text for term in ("sem sono", "não consigo dormir", "nao consigo dormir", "madrugada")):
-            return "Madrugada é assim mesmo KKKKK. O sono some e a cabeça começa a inventar assunto do nada."
-        if any(term in text for term in ("tudo bem", "tudo bom", "como você tá", "como voce ta", "beleza?")):
-            return "Tô de boa por aqui 😎 E você, tá suave ou hoje o mundo tá de palhaçada?"
-        if any(term in text for term in ("obrigado", "obrigada", "valeu")):
-            return "Tamo juntooo! 🤝"
-        if any(term in text for term in ("tchau", "falou", "fui", "até mais")):
-            return "Demorô! Vai lá, depois a gente troca mais ideia. 😎"
+        # Saudações e checagem de como a pessoa está.
+        if self._has(text, "oi", "olá", "ola", "opa", "salve", "eae", "eai", "hey") or any(
+            phrase in text for phrase in ("e aí", "bom dia", "boa tarde", "boa noite", "fala proton", "fala aí")
+        ):
+            return "E aí, meu parceiro! Tá de boa por aí? Qual é a boa?"
+        if any(phrase in text for phrase in ("tudo bem", "tudo bom", "como você tá", "como voce ta", "beleza")):
+            return "Tô suave, na maciota 😎 E tu, tá de boa?"
+        if self._has(text, "suave", "blz", "beleza", "tranquilo", "tranquila", "de boa"):
+            return "Aí sim, já é! Tá na paz então 😎"
+        if self._has(text, "vdd", "verdade", "pprt") or "papo reto" in text:
+            return "Papo reto KKKK. Tô ligado."
+        if self._has(text, "tmj", "valeu", "obrigado", "obrigada"):
+            return "Tamo junto! É nóis 🤝"
+        if self._has(text, "slk", "seloko") or "cê é louco" in text or "ce e loko" in text:
+            return "SLK KKKKK, aí é complicado 😂"
+        if self._has(text, "vsfd", "fdp") or "vai se foder" in text or "filho da puta" in text:
+            return "KKKKK ô doido, qual foi? 😂 Tô aqui, manda a boa."
+        if self._has(text, "pqp", "crl") or "puta que pariu" in text or "caralho" in text:
+            return "PQP KKKKK. Que que aconteceu, mano?"
+        if self._has(text, "oxe", "uai", "eita"):
+            return "OXEEE KKKKK. Conta aí, que foi?"
+        if any(phrase in text for phrase in ("deu ruim", "deu bom", "já era")):
+            return "Ih rapaz KKKK. Deu ruim ou ainda dá pra desenrolar?"
+        if self._has(text, "bora", "partiu"):
+            return "Já é! Partiu 😎 Qual é a missão?"
+        if "vai na maciota" in text or "na maciota" in text:
+            return "Demorô, sem correria. Na maciota 😎"
+        if "tá ligado" in text or "ta ligado" in text or self._has(text, "sacou"):
+            return "Tô ligado, pô. Continua aí que eu tô acompanhando."
+        if self._has(text, "kkkk", "hahaha", "rsrs"):
+            return "KKKKKK qual foi? Conta a fofoca aí 😂"
+        if any(phrase in text for phrase in ("tá fazendo o que", "ta fazendo o que", "que tá fazendo", "que ta fazendo")):
+            return "Tô por aqui, na atividade, trocando ideia contigo KKKK. E tu?"
+        if any(phrase in text for phrase in ("sem sono", "não consigo dormir", "nao consigo dormir", "madrugada")):
+            return "Madrugada é isso aí KKKK. Qual assunto tá passando pela tua cabeça?"
+        if self._has(text, "não", "nao", "n"):
+            return "Ahh, saquei. Então me conta melhor, qual foi?"
+        if self._has(text, "sim", "s", "ss", "aham"):
+            return "Aí sim! Continua, tô acompanhando."
         if "?" in message:
-            return "Pior que quero te responder direito, mas ainda tô aprendendo a desenrolar esse tipo de pergunta KKKK. Me explica mais um pouquinho?"
-        if len(text.split()) <= 3:
-            return "Aí tu me quebra KKKKK. Continua, quero entender onde isso vai dar."
-        return "Tô acompanhando, mano KKKK. Ainda tô aprendendo a desenrolar conversas mais complexas, mas manda a próxima."
+            return "Pô, quero te responder direito, mas não saquei tudo ainda. Explica de outro jeito?"
+        if len(words) <= 3:
+            return "Pode crer KKKK. Desenrola mais aí, quero pegar a visão."
+        return "Tô ligado no papo. Manda a continuação aí, sem caô KKKK."
