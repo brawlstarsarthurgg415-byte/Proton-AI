@@ -253,10 +253,10 @@ def main() -> None:
             # Proton's chat path is intentionally offline: no external model APIs.
             try:
                 from .generation import generate_local_reply
-                context = "\\n".join(
+                context = "\n".join(
                     f"{item['role']}: {item['content']}" for item in history[-4:]
                 )
-                local_prompt = (context + "\\n" if context else "") + prompt
+                local_prompt = (context + "\n" if context else "") + prompt
                 answer = generate_local_reply(local_prompt)
             except (ImportError, OSError, RuntimeError, ValueError):
                 answer = None
