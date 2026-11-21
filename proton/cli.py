@@ -82,12 +82,12 @@ def main() -> None:
 
     def execute_tool(name: str, arguments: dict) -> str:
         if name == "list_files":
-            return "\\n".join(workspace.list_files(str(arguments.get("path", ".")))) or "(pasta vazia)"
+            return "\n".join(workspace.list_files(str(arguments.get("path", ".")))) or "(pasta vazia)"
         if name == "read_file":
             return workspace.read_file(str(arguments["path"]))
         if name == "search_text":
             hits = workspace.search(str(arguments["query"]), str(arguments.get("path", ".")))
-            return "\\n".join(hits) if hits else "Nenhuma ocorrência encontrada."
+            return "\n".join(hits) if hits else "Nenhuma ocorrência encontrada."
         if name == "write_file":
             path_value = str(arguments["path"])
             content_value = str(arguments["content"])
@@ -95,16 +95,16 @@ def main() -> None:
             if not confirm(f"A IA quer gravar {target}. Autorizar?"):
                 return "A gravação foi recusada pelo usuário; nenhum arquivo foi alterado."
             saved, diff = workspace.write_file(path_value, content_value)
-            return f"Arquivo salvo: {saved.relative_to(workspace.root)}\\n{diff}"
+            return f"Arquivo salvo: {saved.relative_to(workspace.root)}\n{diff}"
         if name == "run_command":
             command_value = str(arguments["command"])
             if not confirm(f"A IA quer executar: {command_value}. Autorizar?"):
                 return "A execução foi recusada pelo usuário."
             code, output = workspace.run(command_value)
-            return f"Código de saída: {code}\\n{output}"
+            return f"Código de saída: {code}\n{output}"
         if name == "git_diff":
             code, output = workspace.run("git diff")
-            return f"Código de saída: {code}\\n{output}"
+            return f"Código de saída: {code}\n{output}"
         raise ValueError(f"Ferramenta desconhecida: {name}")
 
     while True:
@@ -138,9 +138,9 @@ def main() -> None:
                 print(f"Workspace : {workspace.root}")
                 print(f"Provedor  : {'configurado' if configured else 'não configurado (fallback local)'}")
                 print(f"Memória   : {len(proton.memory.all())} anotações")
-                print(f"Histórico : {len(history) // 2} trocas nesta sessão")
+                print(f"Contexto  : {len(history)} mensagens nesta sessão")
                 print("Ferramentas: arquivos, busca e comandos permitidos")
-                print("Autonomia : manual; o usuário escolhe cada ferramenta")
+                print("Agente    : a IA pode selecionar ferramentas; escrita/terminal exigem confirmação")
                 continue
             if command == "/files":
                 for entry in workspace.list_files(argument or "."):
