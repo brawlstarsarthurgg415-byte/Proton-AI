@@ -7,7 +7,7 @@ import sys
 from .agent_tools import Workspace
 from .core import Proton
 from .learning import LearningPipeline
-from .llm import generate_chat_reply
+from .llm import generate_agent_reply, generate_chat_reply
 
 RESET = "\033[0m"
 DIM = "\033[2m"
@@ -79,6 +79,33 @@ def main() -> None:
     learning = LearningPipeline(proton.memory)
     history: list[dict[str, str]] = []
     header(workspace)
+
+    def execute_tool(name: str, arguments: dict) -> str:
+        if name == "list_files":
+            return "\\n".join(workspace.list_files(str(arguments.get("path", ".")))) or "(pasta vazia)"
+        if name == "read_file":
+            return workspace.read_file(str(arguments["path"]))
+        if name == "search_text":
+            hits = workspace.search(str(arguments["query"]), str(arguments.get("path", ".")))
+            return "\\n".join(hits) if hits else "Nenhuma ocorrência encontrada."
+        if name == "write_file":
+            path_value = str(arguments["path"])
+            content_value = str(arguments["content"])
+            target = workspace.resolve(path_value)
+            if not confirm(f"A IA quer gravar {target}. Autorizar?"):
+                return "A gravação foi recusada pelo usuário; nenhum arquivo foi alterado."
+            saved, diff = workspace.write_file(path_value, content_value)
+            return f"Arquivo salvo: {saved.relative_to(workspace.root)}\\n{diff}"
+        if name == "run_command":
+            command_value = str(arguments["command"])
+            if not confirm(f"A IA quer executar: {command_value}. Autorizar?"):
+                return "A execução foi recusada pelo usuário."
+            code, output = workspace.run(command_value)
+            return f"Código de saída: {code}\\n{output}"
+        if name == "git_diff":
+            code, output = workspace.run("git diff")
+            return f"Código de saída: {code}\\n{output}"
+        raise ValueError(f"Ferramenta desconhecida: {name}")
 
     while True:
         try:
@@ -203,18 +230,26 @@ def main() -> None:
                 continue
 
             prompt = command_line
-            answer = generate_chat_reply(history, prompt)
+            configured = bool(os.getenv("PROTON_LLM_API_KEY") or os.getenv("OPENAI_API_KEY"))
+            answer = generate_agent_reply(history, prompt, execute_tool)
+            if answer is None and configured:
+                # Compatibility fallback for providers that do not support tool calling.
+                answer = generate_chat_reply(history, prompt)
+                if answer:
+                    history.extend([
+                        {"role": "user", "content": prompt},
+                        {"role": "assistant", "content": answer},
+                    ])
+                    del history[:-40]
             if answer:
-                history.extend([
-                    {"role": "user", "content": prompt},
-                    {"role": "assistant", "content": answer},
-                ])
-                del history[:-24]
                 print(paint("◆ ", BLUE) + answer)
+            elif configured:
+                print(paint("Não consegui obter resposta do provedor. ", YELLOW) +
+                      "Confira o modelo, a URL e a conexão; nenhuma ação foi confirmada como concluída.")
             else:
                 print(paint("Provedor de IA não configurado. ", YELLOW) +
-                      "O chat generativo precisa de uma chave configurada localmente. "
-                      "Não cole chaves aqui; sem ela, o modo básico só oferece memória e ferramentas.")
+                      "O chat generativo e as ferramentas autônomas precisam de uma chave configurada localmente. "
+                      "Não cole chaves aqui; sem ela, você ainda pode usar os comandos manuais de memória e arquivos.")
         except (ValueError, OSError, TimeoutError) as exc:
             print(paint(f"Erro: {exc}", RED))
 
