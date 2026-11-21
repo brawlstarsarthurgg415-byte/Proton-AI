@@ -151,11 +151,11 @@ cargo build --release
 
 ## 🖥️ Terminal interativo Proton
 
-Execute apenas `proton` para abrir a interface de terminal com mascote ASCII e comandos no estilo de um agente de programação.
+Execute `proton` para abrir o HUD do agente no terminal. A interface Python inclui lista e leitura de arquivos, busca de texto no workspace, gravação confirmada com backup, diff do Git e execução confirmada de um conjunto limitado de comandos (`git status/diff/log/branch`, `cargo test/check/build`, `python -m pytest/unittest` e scripts npm selecionados). Os caminhos ficam restritos à pasta de trabalho atual (`PROTON_WORKSPACE` pode definir outra pasta).
 
-Comandos visuais disponíveis: `/help`, `/plan`, `/permissions`, `/agents`, `/terminal`, `/files`, `/diff`, `/undo`, `/model`, `/status`, `/memory`, `/study`, `/clear` e `/exit`.
+Comandos: `/help`, `/status`, `/files`, `/read`, `/find`, `/write`, `/run`, `/diff`, `/ask`, `/learn`, `/list`, `/clear` e `/quit`.
 
-**Limite atual:** essa é a primeira estrutura de interface. Os comandos de planejamento, agentes, terminal, edição de arquivos, diff e undo informam seu estado, mas ainda não executam tarefas inteligentes. O Proton precisa aprender programação e ganhar ferramentas reais antes de receber autonomia para alterar projetos.
+**Limite atual:** o HUD e as ferramentas locais já funcionam como ações explícitas escolhidas pelo usuário. Ainda não há seleção autônoma de ferramentas pelo modelo, subagentes paralelos, aplicação automática de patches sugeridos pelo LLM nem execução irrestrita de terminal. Essas partes serão implementadas em etapas, com permissões e testes.
 
 ## 💬 Comandos nativos disponíveis
 
