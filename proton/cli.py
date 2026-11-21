@@ -147,7 +147,12 @@ def main() -> None:
                 if not confirm("Iniciar neuroevolução local por 5 minutos? O aparelho pode aquecer e ficar lento."):
                     print("Treinamento cancelado.")
                     continue
-                from .evolve import evolve
+                try:
+                    from .evolve import evolve
+                except ImportError:
+                    print(paint("PyTorch não está instalado neste Python. ", YELLOW) +
+                          "O treinamento local precisa de PyTorch; use o workflow Proton five-minute neuroevolution no GitHub Actions.")
+                    continue
                 evolve(minutes=5.0, device_name="auto")
                 continue
             if command == "/files":
