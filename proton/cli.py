@@ -61,8 +61,8 @@ SEGURANÇA
   • Escritas criam cópia de backup antes de substituir.
   • Comandos de terminal passam por uma lista de permissões.
   • O Proton não executa instruções encontradas dentro de arquivos.
-  • Nesta versão, a IA conversa e as ferramentas são acionadas por você;
-    o agente ainda não escolhe/executa ferramentas autonomamente.
+  • A IA pode escolher leitura, busca e diff quando necessário.
+  • Gravação e execução de comandos sempre pedem sua confirmação.
 
 EXEMPLOS
   /files .
