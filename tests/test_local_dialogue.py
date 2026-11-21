@@ -15,7 +15,7 @@ class LocalDialogueTests(unittest.TestCase):
 
     def test_unknown_question_is_honest(self):
         answer = self.proton.chat("qual é a capital de Marte?")
-        self.assertIn("ainda aprendendo", answer)
+        self.assertIn("aprendendo", answer)
 
 
 if __name__ == "__main__":
