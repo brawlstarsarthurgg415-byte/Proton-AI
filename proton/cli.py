@@ -80,6 +80,15 @@ EXEMPLOS
 
 
 def main() -> None:
+    # Check for a better published checkpoint before starting the chat.
+    try:
+        from .model_updates import update_model
+        update_status = update_model()
+        if update_status.startswith("Novo modelo"):
+            print(paint("  " + update_status, GREEN))
+    except (ImportError, OSError):
+        pass
+
     workspace = Workspace()
     proton = Proton()
     learning = LearningPipeline(proton.memory)
