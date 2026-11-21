@@ -173,7 +173,7 @@ def generate_agent_reply(
         except (HTTPError, URLError, TimeoutError, ValueError, KeyError, IndexError, OSError):
             if len(messages) > turn_start + 1:
                 outputs = [item.get("content", "") for item in messages[turn_start:] if item.get("role") == "tool"]
-                answer = "A conexão com o modelo falhou depois das chamadas de ferramenta. Resultados disponíveis:\\n" + "\\n".join(str(item)[:1200] for item in outputs)
+                answer = "A conexão com o modelo falhou depois das chamadas de ferramenta. Resultados disponíveis:\n" + "\n".join(str(item)[:1200] for item in outputs)
                 messages.append({"role": "assistant", "content": answer})
                 history.extend(messages[turn_start:])
                 del history[:-40]
@@ -235,7 +235,7 @@ def generate_agent_reply(
     except (HTTPError, URLError, TimeoutError, ValueError, KeyError, IndexError, OSError):
         if len(messages) > turn_start + 1:
             outputs = [item.get("content", "") for item in messages[turn_start:] if item.get("role") == "tool"]
-            answer = "A conexão com o modelo falhou depois das chamadas de ferramenta. Resultados disponíveis:\\n" + "\\n".join(str(item)[:1200] for item in outputs)
+            answer = "A conexão com o modelo falhou depois das chamadas de ferramenta. Resultados disponíveis:\n" + "\n".join(str(item)[:1200] for item in outputs)
             messages.append({"role": "assistant", "content": answer})
             history.extend(messages[turn_start:])
             del history[:-40]
