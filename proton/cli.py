@@ -8,7 +8,6 @@ from pathlib import Path
 from .agent_tools import Workspace
 from .core import Proton
 from .learning import LearningPipeline
-from .llm import generate_agent_reply, generate_chat_reply
 
 RESET = "\033[0m"
 DIM = "\033[2m"
@@ -34,12 +33,10 @@ def confirm(question: str) -> bool:
 def header(workspace: Workspace) -> None:
     width = 58
     local_checkpoint = Path(__file__).resolve().parent.parent / "checkpoints" / "proton-evolved.pt"
-    if os.getenv("PROTON_LLM_API_KEY") or os.getenv("OPENAI_API_KEY"):
-        model_label = "provedor externo configurado"
-    elif local_checkpoint.is_file():
+    if local_checkpoint.is_file():
         model_label = "núcleo neural local experimental"
     else:
-        model_label = "núcleo local ainda não treinado"
+        model_label = "núcleo local ainda não treinado (API externa desativada)"
     print(paint("╭" + "─" * width + "╮", BLUE))
     print(paint("│", BLUE) + paint("  ◈ PROTON", BOLD + CYAN) + paint("  /  AGENT TERMINAL", DIM) + " " * 22 + paint("│", BLUE))
     print(paint("│", BLUE) + f"  workspace  {workspace.root}"[:width].ljust(width) + paint("│", BLUE))
@@ -253,22 +250,16 @@ def main() -> None:
                 continue
 
             prompt = command_line
-            configured = bool(os.getenv("PROTON_LLM_API_KEY") or os.getenv("OPENAI_API_KEY"))
-            answer = generate_agent_reply(history, prompt, execute_tool)
-            if answer is None and configured:
-                # Compatibility fallback for providers that do not support tool calling.
-                answer = generate_chat_reply(history, prompt)
-            if answer is None and not configured:
-                # The local evolved model is the only offline generative path.
-                try:
-                    from .generation import generate_local_reply
-                    context = "\\n".join(
-                        f"{item['role']}: {item['content']}" for item in history[-4:]
-                    )
-                    local_prompt = (context + "\\n" if context else "") + prompt
-                    answer = generate_local_reply(local_prompt)
-                except (ImportError, OSError, RuntimeError, ValueError):
-                    answer = None
+            # Proton's chat path is intentionally offline: no external model APIs.
+            try:
+                from .generation import generate_local_reply
+                context = "\\n".join(
+                    f"{item['role']}: {item['content']}" for item in history[-4:]
+                )
+                local_prompt = (context + "\\n" if context else "") + prompt
+                answer = generate_local_reply(local_prompt)
+            except (ImportError, OSError, RuntimeError, ValueError):
+                answer = None
             if answer:
                 print(paint("◆ ", BLUE) + answer)
                 history.extend([
@@ -276,13 +267,9 @@ def main() -> None:
                     {"role": "assistant", "content": answer},
                 ])
                 del history[:-40]
-            elif configured:
-                print(paint("Não consegui obter resposta do provedor. ", YELLOW) +
-                      "Confira o modelo, a URL e a conexão; nenhuma ação foi confirmada como concluída.")
             else:
-                print(paint("O núcleo conversacional local ainda não foi treinado. ", YELLOW) +
-                      "Digite /evolve para iniciar uma sessão de neuroevolução de 5 minutos. "
-                      "A qualidade das respostas dependerá dos dados e do treinamento.")
+                print(paint("O núcleo conversacional local ainda não está disponível. ", YELLOW) +
+                      "Treine o modelo com /evolve. Nenhuma API externa será chamada.")
         except (ValueError, OSError, TimeoutError) as exc:
             print(paint(f"Erro: {exc}", RED))
 
