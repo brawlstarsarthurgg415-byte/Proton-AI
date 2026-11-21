@@ -12,12 +12,12 @@ from urllib.request import Request, urlopen
 
 
 def generate_chat_reply(history: list[dict[str, str]], message: str) -> str | None:
-    api_key = os.environ.get("PROTON_LLM_API_KEY", "").strip()
+    api_key = (os.environ.get("PROTON_LLM_API_KEY") or os.environ.get("OPENAI_API_KEY") or "").strip()
     if not api_key:
         return None
 
-    base_url = os.environ.get("PROTON_LLM_BASE_URL", "https://api.openai.com/v1").strip().rstrip("/")
-    model = os.environ.get("PROTON_LLM_MODEL", "gpt-4o-mini").strip()
+    base_url = (os.environ.get("PROTON_LLM_BASE_URL") or os.environ.get("OPENAI_BASE_URL") or "https://api.openai.com/v1").strip().rstrip("/")
+    model = (os.environ.get("PROTON_LLM_MODEL") or os.environ.get("OPENAI_MODEL") or "gpt-4o-mini").strip()
     if not base_url or not model:
         return None
 
