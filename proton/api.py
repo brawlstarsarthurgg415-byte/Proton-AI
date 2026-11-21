@@ -68,7 +68,7 @@ def answer_message(session_id: str, message: str) -> tuple[str, str]:
 def health() -> dict[str, str]:
     return {
         "status": "ok",
-        "chat_engine": "generative" if os.environ.get("PROTON_LLM_API_KEY") else "basic",
+        "chat_engine": "generative" if (os.environ.get("PROTON_LLM_API_KEY") or os.environ.get("OPENAI_API_KEY")) else "basic",
     }
 
 
