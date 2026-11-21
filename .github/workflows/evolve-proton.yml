@@ -1,0 +1,51 @@
+name: Proton five-minute neuroevolution
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: proton-neuroevolution
+  cancel-in-progress: false
+
+jobs:
+  evolve:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install CPU PyTorch
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu torch
+
+      - name: Run five-minute neuroevolution
+        run: |
+          python -m proton.evolve --minutes 5 --device cpu --population 4 --elites 2
+
+      - name: Upload best evolved model
+        uses: actions/upload-artifact@v4
+        with:
+          name: proton-evolved-model
+          path: checkpoints/proton-evolved.pt
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Training report
+        if: always()
+        run: |
+          echo "## Proton neuroevolution" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Requested runtime: 5 minutes." >> "$GITHUB_STEP_SUMMARY"
+          echo "- Population: 4 small neural networks; 2 elites survive each generation." >> "$GITHUB_STEP_SUMMARY"
+          echo "- Children inherit elite weights and receive controlled mutations." >> "$GITHUB_STEP_SUMMARY"
+          echo "- Validation measures next-character prediction on held-out corpus text; it does not prove conversational understanding." >> "$GITHUB_STEP_SUMMARY"
+          echo "- The resulting checkpoint is an experimental character-level model, not a state-of-the-art assistant." >> "$GITHUB_STEP_SUMMARY"
