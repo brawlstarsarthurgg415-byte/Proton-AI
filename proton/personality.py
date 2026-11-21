@@ -15,9 +15,8 @@ class BrazilianPersonality:
 
     @staticmethod
     def _clean(text: str) -> str:
-        text = text.casefold().strip()
-        text = re.sub(r"\s+", " ", text)
-        return text
+        # Normalização lexical local; não muda a personalidade nem as respostas.
+        return normalize_ptbr(text)
 
     @staticmethod
     def _has(text: str, *terms: str) -> bool:
