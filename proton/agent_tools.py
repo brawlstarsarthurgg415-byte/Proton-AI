@@ -6,6 +6,7 @@ writes require a caller-side confirmation, and terminal commands use argv (no sh
 from __future__ import annotations
 
 import difflib
+import hashlib
 import os
 import subprocess
 from pathlib import Path
@@ -13,7 +14,7 @@ from pathlib import Path
 IGNORED_DIRS = {".git", ".venv", "venv", "__pycache__", "node_modules", "target", ".proton-backups"}
 MAX_READ_BYTES = 160_000
 SAFE_COMMANDS = {
-    "pwd", "ls", "git", "python", "python3", "cargo", "npm",
+    "pwd", "git", "python", "python3", "cargo", "npm",
 }
 
 
@@ -67,9 +68,11 @@ class Workspace:
             for name in files:
                 path = Path(base) / name
                 try:
-                    if path.stat().st_size > 500_000:
+                    resolved = path.resolve()
+                    resolved.relative_to(self.root)
+                    if resolved.stat().st_size > 500_000:
                         continue
-                    lines = path.read_text(encoding="utf-8").splitlines()
+                    lines = resolved.read_text(encoding="utf-8").splitlines()
                 except (OSError, UnicodeDecodeError):
                     continue
                 for number, line in enumerate(lines, 1):
@@ -91,7 +94,8 @@ class Workspace:
         if path.exists():
             backup_dir = self.root / ".proton-backups"
             backup_dir.mkdir(exist_ok=True)
-            backup_path = backup_dir / (path.name + ".bak")
+            key = hashlib.sha256(str(path.relative_to(self.root)).encode("utf-8")).hexdigest()[:16]
+            backup_path = backup_dir / (key + ".bak")
             backup_path.write_text(old, encoding="utf-8")
             backup = str(backup_path.relative_to(self.root))
         path.write_text(content, encoding="utf-8")
