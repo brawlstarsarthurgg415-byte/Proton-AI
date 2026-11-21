@@ -292,8 +292,15 @@ def main() -> None:
                     print(paint("◆ Biblioteca de pesquisa local (não é geração neural):", BLUE))
                     print(format_research_results(research_results))
                 else:
-                    print(paint("O núcleo conversacional local ainda não está disponível. ", YELLOW) +
-                          "Não encontrei uma referência relevante na biblioteca. Nenhuma API externa será chamada.")
+                    # A regra de diálogo local mantém o chat útil mesmo sem PyTorch.
+                    # Ela não é um modelo neural e não consulta APIs externas.
+                    answer = proton.chat(prompt)
+                    print(paint("◆ ", BLUE) + answer)
+                    history.extend([
+                        {"role": "user", "content": prompt},
+                        {"role": "assistant", "content": answer},
+                    ])
+                    del history[:-40]
         except (ValueError, OSError, TimeoutError) as exc:
             print(paint(f"Erro: {exc}", RED))
 
