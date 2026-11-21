@@ -31,12 +31,16 @@ jobs:
           python -m pip install --index-url https://download.pytorch.org/whl/cpu torch
 
       - name: Download current champion (if one exists)
-        continue-on-error: true
         run: |
           mkdir -p checkpoints
-          curl -fL --retry 2 \
+          if curl -fL --retry 2 \
             https://github.com/${{ github.repository }}/releases/download/proton-model-latest/proton-evolved.pt \
-            -o checkpoints/previous-proton.pt
+            -o checkpoints/previous-proton.pt; then
+            test -s checkpoints/previous-proton.pt || rm -f checkpoints/previous-proton.pt
+          else
+            rm -f checkpoints/previous-proton.pt
+            echo "Ainda não existe um modelo campeão publicado; este será o primeiro treino."
+          fi
 
       - name: Train candidate for five minutes
         run: |
