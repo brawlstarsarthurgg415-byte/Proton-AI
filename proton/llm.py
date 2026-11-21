@@ -171,6 +171,13 @@ def generate_agent_reply(
                 data = json.loads(response.read().decode("utf-8"))
             assistant = data["choices"][0]["message"]
         except (HTTPError, URLError, TimeoutError, ValueError, KeyError, IndexError, OSError):
+            if len(messages) > turn_start + 1:
+                outputs = [item.get("content", "") for item in messages[turn_start:] if item.get("role") == "tool"]
+                answer = "A conexão com o modelo falhou depois das chamadas de ferramenta. Resultados disponíveis:\\n" + "\\n".join(str(item)[:1200] for item in outputs)
+                messages.append({"role": "assistant", "content": answer})
+                history.extend(messages[turn_start:])
+                del history[:-40]
+                return answer[:5000]
             return None
 
         tool_calls = assistant.get("tool_calls") or []
@@ -226,6 +233,13 @@ def generate_agent_reply(
             data = json.loads(response.read().decode("utf-8"))
         answer = data["choices"][0]["message"]["content"]
     except (HTTPError, URLError, TimeoutError, ValueError, KeyError, IndexError, OSError):
+        if len(messages) > turn_start + 1:
+            outputs = [item.get("content", "") for item in messages[turn_start:] if item.get("role") == "tool"]
+            answer = "A conexão com o modelo falhou depois das chamadas de ferramenta. Resultados disponíveis:\\n" + "\\n".join(str(item)[:1200] for item in outputs)
+            messages.append({"role": "assistant", "content": answer})
+            history.extend(messages[turn_start:])
+            del history[:-40]
+            return answer[:5000]
         return None
     if isinstance(answer, str) and answer.strip():
         messages.append({"role": "assistant", "content": answer.strip()})
