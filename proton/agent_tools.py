@@ -73,7 +73,7 @@ class Workspace:
                     if resolved.stat().st_size > 500_000:
                         continue
                     lines = resolved.read_text(encoding="utf-8").splitlines()
-                except (OSError, UnicodeDecodeError):
+                except (OSError, UnicodeDecodeError, ValueError):
                     continue
                 for number, line in enumerate(lines, 1):
                     if query.casefold() in line.casefold():
