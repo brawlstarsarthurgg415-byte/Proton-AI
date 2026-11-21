@@ -13,7 +13,7 @@ from pathlib import Path
 IGNORED_DIRS = {".git", ".venv", "venv", "__pycache__", "node_modules", "target", ".proton-backups"}
 MAX_READ_BYTES = 160_000
 SAFE_COMMANDS = {
-    "pwd", "ls", "git", "python", "python3", "pytest", "cargo", "npm", "node",
+    "pwd", "ls", "git", "python", "python3", "cargo", "npm",
 }
 
 
