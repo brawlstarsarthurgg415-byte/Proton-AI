@@ -53,6 +53,7 @@ HELP = """PROTON AGENT — COMANDOS
   /ask <pergunta>       pesquisa na memória local
   /learn <texto>        salva uma anotação na memória
   /list                 lista conhecimentos salvos
+  /evolve               treina a IA local por 5 minutos
   /clear                limpa a tela
   /quit                 encerra
 
@@ -141,6 +142,13 @@ def main() -> None:
                 print(f"Contexto  : {len(history)} mensagens nesta sessão")
                 print("Ferramentas: arquivos, busca e comandos permitidos")
                 print("Agente    : a IA pode selecionar ferramentas; escrita/terminal exigem confirmação")
+                continue
+            if command == "/evolve":
+                if not confirm("Iniciar neuroevolução local por 5 minutos? O aparelho pode aquecer e ficar lento."):
+                    print("Treinamento cancelado.")
+                    continue
+                from .evolve import evolve
+                evolve(minutes=5.0, device_name="auto")
                 continue
             if command == "/files":
                 for entry in workspace.list_files(argument or "."):
@@ -235,21 +243,31 @@ def main() -> None:
             if answer is None and configured:
                 # Compatibility fallback for providers that do not support tool calling.
                 answer = generate_chat_reply(history, prompt)
-                if answer:
-                    history.extend([
-                        {"role": "user", "content": prompt},
-                        {"role": "assistant", "content": answer},
-                    ])
-                    del history[:-40]
+            if answer is None and not configured:
+                # The local evolved model is the only offline generative path.
+                try:
+                    from .generation import generate_local_reply
+                    context = "\\n".join(
+                        f"{item['role']}: {item['content']}" for item in history[-4:]
+                    )
+                    local_prompt = (context + "\\n" if context else "") + prompt
+                    answer = generate_local_reply(local_prompt)
+                except (ImportError, OSError, RuntimeError, ValueError):
+                    answer = None
             if answer:
                 print(paint("◆ ", BLUE) + answer)
+                history.extend([
+                    {"role": "user", "content": prompt},
+                    {"role": "assistant", "content": answer},
+                ])
+                del history[:-40]
             elif configured:
                 print(paint("Não consegui obter resposta do provedor. ", YELLOW) +
                       "Confira o modelo, a URL e a conexão; nenhuma ação foi confirmada como concluída.")
             else:
-                print(paint("Provedor de IA não configurado. ", YELLOW) +
-                      "O chat generativo e as ferramentas autônomas precisam de uma chave configurada localmente. "
-                      "Não cole chaves aqui; sem ela, você ainda pode usar os comandos manuais de memória e arquivos.")
+                print(paint("O núcleo conversacional local ainda não foi treinado. ", YELLOW) +
+                      "Digite /evolve para iniciar uma sessão de neuroevolução de 5 minutos. "
+                      "A qualidade das respostas dependerá dos dados e do treinamento.")
         except (ValueError, OSError, TimeoutError) as exc:
             print(paint(f"Erro: {exc}", RED))
 
