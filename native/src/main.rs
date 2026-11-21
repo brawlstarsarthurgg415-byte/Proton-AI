@@ -168,7 +168,7 @@ fn main() -> io::Result<()> {
             .status()
         {
             Ok(status) if status.success() => return Ok(()),
-            Ok(status) => eprintln!("Aviso: o chat Python terminou com codigo {}. Abrindo modo Rust basico.", status),
+            Ok(status) => eprintln!("Aviso: o chat Python terminou com codigo {}. Abrindo modo Rust basico.", status.code().unwrap_or(-1)),
             Err(error) => eprintln!("Aviso: nao consegui iniciar o chat Python ({error}). Abrindo modo Rust basico."),
         }
         return repl();
