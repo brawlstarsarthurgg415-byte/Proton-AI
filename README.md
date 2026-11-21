@@ -155,7 +155,7 @@ Execute `proton` para abrir o HUD do agente no terminal. A interface Python incl
 
 Comandos: `/help`, `/status`, `/files`, `/read`, `/find`, `/write`, `/run`, `/diff`, `/ask`, `/learn`, `/list`, `/clear` e `/quit`.
 
-**Limite atual:** o HUD e as ferramentas locais já funcionam como ações explícitas escolhidas pelo usuário. Ainda não há seleção autônoma de ferramentas pelo modelo, subagentes paralelos, aplicação automática de patches sugeridos pelo LLM nem execução irrestrita de terminal. Essas partes serão implementadas em etapas, com permissões e testes.
+**Limite atual:** com um provedor compatível com chamadas de ferramentas configurado, o modelo já pode escolher leitura, busca e diff, além de propor gravações e comandos. Gravações e execução sempre exigem confirmação explícita. Ainda faltam subagentes paralelos, aplicação de patches com revisão avançada, streaming de respostas e integração de testes/undo mais completa. Não há execução irrestrita de terminal.
 
 ## 💬 Comandos nativos disponíveis
 
