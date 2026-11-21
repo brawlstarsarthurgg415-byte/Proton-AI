@@ -37,7 +37,7 @@ class BrazilianPersonality:
                 return "Ah, agora quer trocar ideia? Sei... depois daquela ofensa gratuita KKKKK 🙄"
             return "Tá, vai. Vou parar de drama KKKKK. Qual foi?"
 
-        if any(term in text for term in ("bom dia", "boa tarde", "boa noite", "e aí", "eai", "opa", "salve", "fala proton", "fala aí")):
+        if text in {"oi", "olá", "ola", "hey", "hello", "eae"} or any(term in text for term in ("bom dia", "boa tarde", "boa noite", "e aí", "eai", "opa", "salve", "fala proton", "fala aí")):
             return "Opaaa! Suave por aí? Qual vai ser a resenha de hoje? KKKK"
         if any(term in text for term in ("slk", "seloko", "cê é loko", "ce e loko")):
             return "SLKKKKKK, aí tu mandou essa do nada 😂"
