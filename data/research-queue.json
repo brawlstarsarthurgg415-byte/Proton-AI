@@ -73,20 +73,26 @@
   },
   {
     "topic": "segurança digital",
-    "status": "pending",
+    "status": "researched",
     "priority": 50,
-    "reason": "currículo inicial"
+    "reason": "currículo inicial",
+    "last_checked_at": "2026-11-24T14:59:08.548338+00:00",
+    "pages_found": 3
   },
   {
     "topic": "língua portuguesa",
-    "status": "pending",
+    "status": "researched",
     "priority": 50,
-    "reason": "currículo inicial"
+    "reason": "currículo inicial",
+    "last_checked_at": "2026-11-24T14:59:09.986943+00:00",
+    "pages_found": 2
   },
   {
     "topic": "pensamento crítico",
-    "status": "pending",
+    "status": "researched",
     "priority": 50,
-    "reason": "currículo inicial"
+    "reason": "currículo inicial",
+    "last_checked_at": "2026-11-24T14:59:11.361061+00:00",
+    "pages_found": 3
   }
 ]
