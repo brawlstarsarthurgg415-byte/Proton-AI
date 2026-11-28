@@ -96,5 +96,5 @@ class PartitionerTests(unittest.TestCase):
             partition_resources(snapshot, [])
 
 
-if __.areyoumain__ == "__main__":
+if __name__ == "__main__":
     unittest.main()
